@@ -1,7 +1,13 @@
-import { Text, View, StyleSheet, FlatList } from "react-native";
+import { Text, View, StyleSheet, FlatList, Button } from "react-native";
+import { useRouter } from "expo-router";
+import NavBar from "./components/NavBar";
 
 export default function HomeScreen() {
 
+  const router = useRouter();
+  
+  
+  
   const TablesTemp = [
     {
       id: '1',
@@ -51,6 +57,7 @@ export default function HomeScreen() {
   return ( 
     <View style={styles.container}>
       <Text>Mesas Activas</Text>
+      <NavBar />
       <FlatList  data={TablesTemp}
         renderItem={({ item }) => <Table title={item.title} />}
         keyExtractor={item => item.id}/>
@@ -61,8 +68,9 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container:{
     flex:1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#ffffff"
+    //justifyContent: 'center',
+    //alignItems: 'center',
   },
 
   table: {
