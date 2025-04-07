@@ -6,65 +6,61 @@ import { useRouter } from "expo-router";
 const { width, height } = Dimensions.get("window");
 
 export default function Navbar() {
-  const router = useRouter(); // Navegación entre vistas
+  const router = useRouter();
 
   return (
     <View style={styles.navbar}>
-      <View style={styles.topIcons}>
-        <View style={styles.iconContainer}>
-            <Icon name="home" accessibilityLabel="prueba" size={30} color="#fff" style={styles.icon} onPress={() => router.push("/")} />
-            <Text style={styles.label}>Home</Text>
-          </View>
-          <View style={styles.iconContainer}>
-            <Icon name="notifications" size={30} color="#fff" style={styles.icon} onPress={() => router.push("/pages/notificationScreen")} />
-            {/* <Text style={styles.label}>Notifications</Text> */}
-          </View>
-          <View style={styles.iconContainer}>
-          <Icon name="credit-score" size={30} color="#fff" style={styles.icon} onPress={() => router.push("/pages/tipsScreen")} />
-          <Text style={styles.label}>Tips</Text>
-          </View>
-          <View style={styles.iconContainer}>
-          <Icon name="qr-code" size={30} color="#fff" style={styles.icon} onPress={() => router.push("/pages/profileScreen")} />
+      <View style={styles.leftIcons}>
+        <View style={styles.iconItem}>
+          <Icon name="home" size={30} color="#fff" onPress={() => router.push("/")} />
+          <Text style={styles.label}>Inicio</Text>
+        </View>
+        <View style={styles.iconItem}>
+          <Icon name="notifications" size={30} color="#fff" onPress={() => router.push("/pages/notificationScreen")} />
+          <Text style={styles.label}>Notificaciones</Text>
+        </View>
+        <View style={styles.iconItem}>
+          <Icon name="credit-score" size={30} color="#fff" onPress={() => router.push("/pages/tipsScreen")} />
+          <Text style={styles.label}>Propinas</Text>
+        </View>
+        <View style={styles.iconItem}>
+          <Icon name="qr-code" size={30} color="#fff" onPress={() => router.push("/pages/profileScreen")} />
           <Text style={styles.label}>QR</Text>
-          </View>
-          <View style={styles.iconContainer}>
-            <Icon name="person" size={30} color="#fff" style={styles.icon} onPress={() => router.push("/pages/profileScreen")} />
-            <Text style={styles.label}>Profile</Text>
-          </View>
+        </View>
       </View>
-      <View style={styles.logOut}>
-            <Icon name="logout" size={30} color="#fff" style={styles.icon} onPress={() => router.push("/")} />
-            <Text style={styles.label}>Logout</Text>
-          </View>
+      <View style={styles.rightIcon}>
+        <Icon name="logout" size={30} color="#fff" onPress={() => router.push("/")} />
+        <Text style={styles.label}>Salir</Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   navbar: {
-    width: width * 0.05,
-    height: height * 0.9,
-    backgroundColor: "#003f5c",
-    justifyContent: "space-between",
+    width: width,
+    height: height * 0.085, 
+    backgroundColor: "#003f5c", 
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    alignItems: "center", 
+    paddingHorizontal: 20,    
+  },
+  leftIcons: {
+    flexDirection: "row",
+    justifyContent: "flex-start", 
     alignItems: "center",
-    paddingVertical: 20,
   },
-  icon: {
-    marginBottom: 0,
+  rightIcon: {
+    alignItems: "center", 
   },
-  iconContainer:{
-    alignItems: "center",
-    marginBottom: 20
+  iconItem: {
+    alignItems: "center", 
+    marginHorizontal: 10, 
   },
-  label:{
-    fontSize: 12,
-    color: "#ffffff",
+  label: {
+    fontSize: 12, 
+    color: "#ffffff", 
+    marginTop: 5, 
   },
-  topIcons: {
-    alignItems: "center"
-  },
-  logOut: {
-    alignItems: "center",
-    marginBottom: 20
-  }
 });

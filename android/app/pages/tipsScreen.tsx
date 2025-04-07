@@ -77,6 +77,7 @@ export default function TipsScreen(){
                 )}
                 />
             </View>
+            
         </View>
 
     );
@@ -88,16 +89,17 @@ export default function TipsScreen(){
 
 const styles = StyleSheet.create({
     container:{
-        flex: 1,
-        flexDirection: "row"
-        //width: width * 0.8, // El 80% del ancho de la pantalla
-        //height: height * 0.5, // El 50% de la altura de la pantalla
+        //flex: 1,
+        flexDirection: "column",
+        width: width,
+        height: height * 0.8, 
     },
     content: {
         //flex: 1, // El resto del espacio después del navbar
         paddingTop: height * 0.1,
         width: width * 0.91,
         padding: 10,
+        margin: height * 0.05,
         justifyContent: "flex-end",
         backgroundColor: "#ffffff", // Fondo claro
       },
