@@ -7,8 +7,9 @@ body {
   align-items: center;
   height: 100vh;
   font-family: Arial, sans-serif;
-  background-color: #f8f9fa;
+  background: rgb(243, 247, 250);
   color: #333;
+  overflow: hidden;
 }
 
 .header {
@@ -20,6 +21,7 @@ body {
   background-color: #ffffff;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   text-align: left;
+  z-index: 10000;
 }
 
 .logo {
@@ -58,10 +60,14 @@ body {
 .menu-button {
   width: 200px;
   padding: 15px;
+  background-color: #006b8f;
+  color: white;
+  font-weight:200
 }
 
 .menu-button:hover {
   transform: scale(1.01);
+  background-color: #0080aa;
 }
 
 .waiting-message {
