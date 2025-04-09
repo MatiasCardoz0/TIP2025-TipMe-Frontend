@@ -54,7 +54,7 @@ function App() {
             ✋ Solicitar servicio
           </button>
           <button className='menu-button' onClick={() => handleAction("Pedir Cuenta", 2)}>
-            💳 Pedir la cuenta
+            📃Pedir la cuenta
           </button>
           <button className='menu-button' onClick={() => leaveATip()}>
             ⭐ Dejar Propina
@@ -66,9 +66,6 @@ function App() {
         {openTipModal && <TipModal openModal={setOpenTipModal} />}
       </div>
 
-      <div className='footer'>
-      TipMe - Todos los derechos reservados.
-      </div>
     </div>
     )
   

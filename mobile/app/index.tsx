@@ -1,38 +1,17 @@
 import React, { useEffect } from "react";
 import { Text, View, StyleSheet, FlatList, Button } from "react-native";
 import NavBar from "./components/NavBar";
-//import { useTables } from "./hooks/useTables";
+import { useTables } from "./hooks/useTables";
 import Navbar from "./components/NavBar";
 
 export default function HomeScreen() {
 
-  //const { tables, fetchTables, loading, error } = useTables();
+  const { tables, fetchTables, loading, error } = useTables();
   
-    // useEffect(() => {
-    //   fetchTables(); // Cargar las mesas al montar el componente
-    //   console.log(tables);
-    // }, []);
-  
-    const tables = [
-      {
-        id: "1",
-        nombre: "Mesa 1",
-        lugares: 4,
-        estado: "DISPONIBLE", // disponible
-      },
-      {
-        id: "2",
-        nombre: "Mesa 2",
-        lugares: 2,
-        estado: "LLAMANDO MOZO", // reservada
-      },
-      {
-        id: "3",
-        nombre: "Mesa 3",
-        lugares: 6,
-        estado: "OCUPADA", // ocupada
-      },
-    ];
+    useEffect(() => {
+      fetchTables(); // Cargar las mesas al montar el componente
+      console.log(tables);
+    }, []);
 
     //declaro el tipo de las propiedades de table
     type Table = {
@@ -77,7 +56,7 @@ export default function HomeScreen() {
           </View>
           <View style={styles.statusContainer}>
             <View style={[styles.statusBadge, getStatusStyle(item.estado)]}>
-              <Text style={styles.statusText}>{item.estado.toLowerCase()}</Text>
+              <Text style={styles.statusText}>{item.estado}</Text>
             </View>
           </View>
         </View>

@@ -1,7 +1,8 @@
 .modal-window{
     width: 100vw;
     height: 100vh;
-    background: rgb(234, 242, 248);
+    background: #b3d9ff;
+    ;
     position: fixed;
     display: flex;
     justify-content: center;
@@ -44,7 +45,7 @@
   .modal-button {
     padding: 10px 15px;
     font-size: 16px;
-    background-color: #006b8f;
+    background-color: #0056B3;
     color: white;
     border: none;
     border-radius: 8px;
@@ -53,7 +54,7 @@
   }
   
   .modal-button:hover {
-    background-color: #004f69;
+    background-color: #007BFF;
 }
   
   

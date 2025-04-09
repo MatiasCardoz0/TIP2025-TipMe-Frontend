@@ -7,8 +7,8 @@ body {
   align-items: center;
   height: 100vh;
   font-family: Arial, sans-serif;
-  background: rgb(243, 247, 250);
-  color: #333;
+  background: #f4faff;
+  color: #2c3e50	;
   overflow: hidden;
 }
 
@@ -22,6 +22,7 @@ body {
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   text-align: left;
   z-index: 10000;
+  color: #2c3e50;
 }
 
 .logo {
@@ -31,7 +32,7 @@ body {
 .header h1 {
   margin: 0;
   font-size: 34px;
-  color: #333;
+  color: #2c3e50;
 }
 
 .main-content {
@@ -45,7 +46,7 @@ body {
 .portal-title{
   font-size: 30px;
   text-align: center;
-  margin-top: 45%;
+  margin-top: 100px;
 }
 
 .buttons {
@@ -60,18 +61,29 @@ body {
 .menu-button {
   width: 200px;
   padding: 15px;
-  background-color: #006b8f;
+  background-color: #339CFF;
   color: white;
   font-weight:200
 }
 
 .menu-button:hover {
   transform: scale(1.01);
-  background-color: #0080aa;
+  background-color: #007BFF;
 }
 
-.waiting-message {
-  margin: 25px;
+.status {
+  margin-top: 45px;
+}
+
+.cancel-call {
+  background-color: #fafafa;
+  border-color: #ff1010;
+  color: #ff1010;
+}
+
+.cancel-call:hover {
+  background-color: #ffc7c7;
+  border-color: #ff1010;
 }
 
 .footer {

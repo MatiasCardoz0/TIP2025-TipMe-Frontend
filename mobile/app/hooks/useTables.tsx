@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const useTables = () => {
+export const useTables = () => {
   const [tables, setTables] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -9,7 +9,7 @@ const useTables = () => {
   const fetchTables = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5065/api/mesa/historico/1");
+      const response = await fetch("http://localhost:5065/api/mesa/historico/:idMozo?idMozo=1");
       const json = await response.json();
       setTables(json.data);
       setError(null);
@@ -42,5 +42,3 @@ const useTables = () => {
 
   return { tables, fetchTables, addTable, loading, error };
 };
-
-export default useTables;
