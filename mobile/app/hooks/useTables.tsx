@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const useTables = () => {
+const useTables = () => {
   const [tables, setTables] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,3 +42,5 @@ export const useTables = () => {
 
   return { tables, fetchTables, addTable, loading, error };
 };
+
+export default useTables;
