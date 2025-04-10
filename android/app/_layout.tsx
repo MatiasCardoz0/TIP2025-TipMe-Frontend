@@ -7,12 +7,13 @@ export default function RootLayout() {
     headerStyle: {
       backgroundColor: 'black',
     },
-    
+
     headerTintColor: '#fafafa',
     headerTitleStyle: {
       fontSize: 20,
       fontWeight: 'bold',
     },
+    headerShown: false,
     contentStyle: { //aplica a cualquier página dentro del layout
       paddingHorizontal: 10,
       paddingTop: 10,
