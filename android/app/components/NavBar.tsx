@@ -38,13 +38,13 @@ export default function Navbar() {
 
 const styles = StyleSheet.create({
   navbar: {
-    width: width,
-    height: height * 0.085, 
-    backgroundColor: "#003f5c", 
+    width: "100%",
+    height: "8.5%", 
+    backgroundColor: "#339CFF", 
     flexDirection: "row", 
     justifyContent: "space-between", 
     alignItems: "center", 
-    paddingHorizontal: 20,    
+    paddingHorizontal: 20
   },
   leftIcons: {
     flexDirection: "row",
