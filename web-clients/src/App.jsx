@@ -13,29 +13,19 @@ function App() {
     await setWaitingAction(true);
     setMessage("Procesando solicitud...");
 
-    try {
-      //const response = await axios.post("https://backend.com/api/action", { action: actionType });
-
-    // if (response.status === 200) {
-
-          console.log({num})
-          if(num === 2){
-            //opción de avisar con qué método de pago
-            setMessage(`Esperando la cuenta...`);
-          }
-          if(num === 1) {
-            setMessage(`Esperando servicio solicitado...`);
-          }
-    //     } else {
-    //         setStatusMessage("Hubo un error. Intente nuevamente.");
-    //     }
-    // } catch (error) {
-    
-    } catch {
-        //setStatusMessage("Error en la conexión con el servidor.");
-        console.log('ERROR- no se pudo realizar la operación')
-      }
+    console.log({num})
+    if(num === 2){
+      //opción de avisar con qué método de pago
+      setMessage(`Esperando la cuenta...`);
+    }
+    if(num === 1) {
+      setMessage(`Esperando servicio solicitado...`);
+    }
+     else {
+        setStatusMessage("Hubo un error. Intente nuevamente.");
+    }
   }
+
 
   const cancelAction = async () => {
     setWaitingAction(false);
@@ -64,7 +54,7 @@ function App() {
             ✋ Solicitar servicio
           </button>
           <button className='menu-button' onClick={() => handleAction("Pedir Cuenta", 2)}>
-            💳 Pedir la cuenta
+            📃Pedir la cuenta
           </button>
           <button className='menu-button' onClick={() => leaveATip()}>
             ⭐ Dejar Propina
@@ -76,9 +66,6 @@ function App() {
         {openTipModal && <TipModal openModal={setOpenTipModal} />}
       </div>
 
-      <div className='footer'>
-      TipMe - Todos los derechos reservados.
-      </div>
     </div>
     )
   
