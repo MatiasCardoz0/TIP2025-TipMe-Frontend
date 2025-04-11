@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { config } from "../config";
 
 export const useTables = () => {
   const [tables, setTables] = useState<any[]>([]);
@@ -9,7 +10,8 @@ export const useTables = () => {
   const fetchTables = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5065/api/mesa/historico/1");
+        console.log(config.API_URL)
+      const response = await fetch(config.API_URL+"/api/mesa/historico/1");
       const json = await response.json();
       setTables(json.data);
       setError(null);
@@ -23,7 +25,7 @@ export const useTables = () => {
   // POST Mesas (Agregar una nueva mesa)
   const addTable = async (newTable: any) => {
     try {
-      const response = await fetch("http://localhost:5065/api/mesa", {
+      const response = await fetch(config.API_URL+"/api/mesa", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

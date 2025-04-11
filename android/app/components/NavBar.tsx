@@ -24,7 +24,7 @@ export default function Navbar() {
           <Text style={styles.label}>Propinas</Text>
         </View>
         <View style={styles.iconItem}>
-          <Icon name="qr-code" size={30} color="#fff" onPress={() => router.push("/pages/profileScreen")} />
+          <Icon name="qr-code" size={30} color="#fff" onPress={() => router.push("/pages/tipsScreen")} />
           <Text style={styles.label}>QR</Text>
         </View>
       </View>

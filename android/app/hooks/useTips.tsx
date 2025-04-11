@@ -1,4 +1,5 @@
 import { useState } from "react";
+import {config} from "../config";
 
 export const useTips = () => {
   const [tips, setTips] = useState<any[]>([]);
@@ -9,7 +10,7 @@ export const useTips = () => {
   const fetchTips = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://192.168.0.101:5065/api/propina/1");
+      const response = await fetch(config.API_URL+"/api/propina/1");
       const json = await response.json();
       setTips(json.data);
       setError(null);
@@ -23,7 +24,7 @@ export const useTips = () => {
   // POST Propinas (Agregar una nueva propina)
   const addTip = async (newTable: any) => {
     try {
-      const response = await fetch("http://192.168.0.100:5065/api/grabar", {
+      const response = await fetch(config.API_URL+"/api/grabar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

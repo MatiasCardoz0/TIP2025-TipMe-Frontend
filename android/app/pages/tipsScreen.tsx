@@ -5,6 +5,7 @@ import Navbar from "../components/NavBar";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import RNPickerSelect from "react-native-picker-select";
 
+
 const { width, height } = Dimensions.get("window");
 
 type Tip = {
@@ -117,7 +118,7 @@ const styles = StyleSheet.create({
       paddingHorizontal: 10,
     },
     content: {
-        //paddingTop: "5%",
+        paddingTop: "10%",
         width: "100%",
         justifyContent: "flex-end",
         backgroundColor: "#ffffff", // Fondo claro
