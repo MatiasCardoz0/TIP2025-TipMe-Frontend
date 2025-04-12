@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import './components/Modal/TipModal.jsx'
 import TipModal from './components/Modal/TipModal.jsx'
+import logo from '../../shared/TipMe_Logo_transparent.png'
 
 function App() {
   const [message, setMessage] = useState('')
@@ -42,7 +43,7 @@ function App() {
     <div>
       <div className='header'>
         <div className='logo'>     
-          <h1>TipMe</h1>
+          <img src={logo} alt="Logo" className='logo-image' /> <h1>TipMe</h1>
         </div>
       </div>
 
@@ -65,7 +66,6 @@ function App() {
                 </div>
         {openTipModal && <TipModal openModal={setOpenTipModal} />}
       </div>
-
     </div>
     )
   
