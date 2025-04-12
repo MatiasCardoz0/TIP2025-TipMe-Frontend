@@ -41,12 +41,12 @@ export default function HomeScreen() {
   }; 
 
   return (
-    <View> 
+    <View style={styles.container}> 
       <Navbar/>
       <Text style= {styles.listItemsTitle}>Detalle de Mesas</Text>
       <FlatList 
         data={tables}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
         renderItem={({ item }) => (
 
           <View style={styles.tableContainer}>
@@ -67,6 +67,12 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  container:{
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    paddingHorizontal: 10,
+  },
   tableContainer: {
     backgroundColor: '#fff',
     padding: 20,

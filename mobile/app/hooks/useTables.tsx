@@ -13,6 +13,7 @@ export const useTables = () => {
         console.log(config.API_URL)
       const response = await fetch(config.API_URL+"/api/mesa/historico/1");
       const json = await response.json();
+      console.log(json)
       setTables(json.data);
       setError(null);
     } catch (err: any) {
