@@ -6,8 +6,8 @@ export default function NotificationScreen(){
     return(
         <View style={styles.container}>
             
-            <Text>Pantalla de notificaciones</Text>
             <NavBar/>
+            <Text>Pantalla de notificaciones</Text>
         </View>
     );
 
@@ -20,7 +20,10 @@ export default function NotificationScreen(){
 //Estilos de la pantalla de notificaciones
 
 const styles = StyleSheet.create({
-    container:{
-
+    container:{       
+        flex: 1,
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        paddingHorizontal: 10,          
     }
 });

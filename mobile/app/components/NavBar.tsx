@@ -24,7 +24,7 @@ export default function Navbar() {
           <Text style={styles.label}>Propinas</Text>
         </View>
         <View style={styles.iconItem}>
-          <Icon name="qr-code" size={30} color="#fff" onPress={() => router.push("/pages/profileScreen")} />
+          <Icon name="qr-code" size={30} color="#fff"  />
           <Text style={styles.label}>QR</Text>
         </View>
       </View>
@@ -38,13 +38,13 @@ export default function Navbar() {
 
 const styles = StyleSheet.create({
   navbar: {
-    width: width,
-    height: height * 0.085, 
-    backgroundColor: "#003f5c", 
+    width: "100%",
+    height: "8.5%", 
+    backgroundColor: "#339CFF", 
     flexDirection: "row", 
     justifyContent: "space-between", 
     alignItems: "center", 
-    paddingHorizontal: 20,    
+    paddingHorizontal: 20
   },
   leftIcons: {
     flexDirection: "row",
