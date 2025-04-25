@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, FlatList, Button } from "react-native";
 import NavBar from "./components/NavBar";
 import { useTables } from "./hooks/useTables";
 import Navbar from "./components/NavBar";
+import * as Notifications from 'expo-notifications';
 
 export default function HomeScreen() {
 
@@ -11,6 +12,13 @@ export default function HomeScreen() {
     useEffect(() => {
       fetchTables(); // Cargar las mesas al montar el componente
       console.log(tables);
+
+      //escucho el evento de notificacion
+      const subscription = Notifications.addNotificationReceivedListener(notification => {
+        console.log('Notification received:', notification);
+      });
+  
+      return () => subscription.remove();
     }, []);
 
     //declaro el tipo de las propiedades de table
@@ -21,6 +29,9 @@ export default function HomeScreen() {
       estado: string;
     };
 
+    const subscription = Notifications.addNotificationReceivedListener(notification => {
+      console.log('Notification received:', notification);
+    });
 
     const getStatusStyle = (status:string) => {
       switch (status) {
