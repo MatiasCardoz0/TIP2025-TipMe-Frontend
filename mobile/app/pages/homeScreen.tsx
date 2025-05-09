@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, FlatList, Button } from "react-native";
 import { useTables } from "../hooks/useTables";
 import Navbar from "../components/NavBar";
-
+import EstadoMesa from "../stateEnum";
+import { formatEnumText } from "../stateEnum";
 
 export default function HomeScreen() {
 
@@ -20,18 +21,18 @@ export default function HomeScreen() {
       id: string;
       nombre: string;
       lugares: number;
-      estado: string;
+      estado: number;
     };
 
-    const getStatusStyle = (status:string) => {
-      switch (status) {
-        case "DISPONIBLE":
+    const getStatusStyle = (estado:number) => {
+      switch (estado) {
+        case EstadoMesa.DISPONIBLE:
           return styles.statusAvailable;
-        case "OCUPADA":
-          return styles.statusOccupied;
-        case "RESERVADA":
+        case EstadoMesa.RESERVADA:
           return styles.statusReserved;
-        case "LLAMANDO MOZO":
+        case EstadoMesa.OCUPADA:
+          return styles.statusOccupied;
+        case EstadoMesa.LLAMANDO:
           return styles.statusCallingWaiter;
 
           default:
@@ -48,7 +49,7 @@ export default function HomeScreen() {
       <FlatList 
         data={tables}
         keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
-        renderItem={({ item }) => (
+        renderItem={({ item }: { item: Table }) => (
 
           <View style={styles.tableContainer}>
           <View style={styles.tableInfo}>
@@ -57,7 +58,7 @@ export default function HomeScreen() {
           </View>
           <View style={styles.statusContainer}>
             <View style={[styles.statusBadge, getStatusStyle(item.estado)]}>
-              <Text style={styles.statusText}>{item.estado}</Text>
+              <Text style={styles.statusText}>{formatEnumText(Object.keys(EstadoMesa).find(key => EstadoMesa[key as keyof typeof EstadoMesa] === item.estado) || "UNKNOWN")}</Text>
             </View>
           </View>
         </View>
