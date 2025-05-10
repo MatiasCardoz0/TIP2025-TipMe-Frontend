@@ -2,14 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, FlatList, Button } from "react-native";
 import { useTables } from "../hooks/useTables";
 import Navbar from "../components/NavBar";
-import EstadoMesa from "../stateEnum";
-import { formatEnumText } from "../stateEnum";
+
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { Modal } from "react-native";
+import QRCode  from "react-native-qrcode-svg";
 
 export default function HomeScreen() {
 
   const { tables, fetchTables, loading, error } = useTables();
   const [notification, setNotification] = useState<string | null>(null);
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedTableQR, setSelectedTableQR] = useState<Table | null>(null);
   
     useEffect(() => {
       fetchTables(); // Cargar las mesas al montar el componente
@@ -21,18 +25,19 @@ export default function HomeScreen() {
       id: string;
       nombre: string;
       lugares: number;
-      estado: number;
+      estado: string;
+      qr: string;
     };
 
-    const getStatusStyle = (estado:number) => {
-      switch (estado) {
-        case EstadoMesa.DISPONIBLE:
+    const getStatusStyle = (status:string) => {
+      switch (status) {
+        case "DISPONIBLE":
           return styles.statusAvailable;
-        case EstadoMesa.RESERVADA:
-          return styles.statusReserved;
-        case EstadoMesa.OCUPADA:
+        case "OCUPADA":
           return styles.statusOccupied;
-        case EstadoMesa.LLAMANDO:
+        case "RESERVADA":
+          return styles.statusReserved;
+        case "LLAMANDO MOZO":
           return styles.statusCallingWaiter;
 
           default:
@@ -44,21 +49,37 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}> 
+      <Modal visible={modalVisible} transparent animationType="slide">
+    <View style={styles.modalContainer}>
+      <Text style={styles.tableName}>QR de {selectedTableQR?.nombre}</Text>
+      <View style={styles.modalContent}>
+        {selectedTableQR && <QRCode value={selectedTableQR.qr} size={200} />}
+        <Button title="Cerrar" onPress={() => {setModalVisible(false)
+        }} />
+      </View>
+    </View>
+  </Modal>
       <Navbar/>
       <Text style= {styles.listItemsTitle}>Detalle de Mesas</Text>
       <FlatList 
         data={tables}
         keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
-        renderItem={({ item }: { item: Table }) => (
+        renderItem={({ item }) => (
 
           <View style={styles.tableContainer}>
           <View style={styles.tableInfo}>
             <Text style={styles.tableName}>{item.nombre}</Text>
             <Text style={styles.seats}> Lugares: 3 </Text>
+            
+            <Icon name="qr-code" size={30}  onPress={() => {
+                setSelectedTableQR(item);
+                setModalVisible(true);
+              }} />
+
           </View>
           <View style={styles.statusContainer}>
             <View style={[styles.statusBadge, getStatusStyle(item.estado)]}>
-              <Text style={styles.statusText}>{formatEnumText(Object.keys(EstadoMesa).find(key => EstadoMesa[key as keyof typeof EstadoMesa] === item.estado) || "UNKNOWN")}</Text>
+              <Text style={styles.statusText}>{item.estado}</Text>
             </View>
           </View>
         </View>
@@ -98,6 +119,7 @@ const styles = StyleSheet.create({
   seats: {
     fontSize: 14,
     color: '#667',
+    padding : 10,
   },
   statusContainer: {
     flexDirection: 'row',
@@ -134,4 +156,16 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
 
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#339CFF",
+    padding: 40,
+    borderRadius: 10,
+    alignItems: "center",
+  },
 });
