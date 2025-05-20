@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, FlatList, Button } from "react-native";
 import { useTables } from "../hooks/useTables";
 import Navbar from "../components/NavBar";
+import EstadoMesa from "../stateEnum";
+import { formatEnumText } from "../stateEnum";
 
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Modal } from "react-native";
@@ -25,24 +27,22 @@ export default function HomeScreen() {
       id: string;
       nombre: string;
       lugares: number;
-      estado: string;
+      estado: number;
       qr: string;
     };
 
-    const getStatusStyle = (status:string) => {
-      switch (status) {
-        case "DISPONIBLE":
+        const getStatusStyle = (estado:number) => {
+      switch (estado) {
+        case EstadoMesa.DISPONIBLE:
           return styles.statusAvailable;
-        case "OCUPADA":
-          return styles.statusOccupied;
-        case "RESERVADA":
+        case EstadoMesa.RESERVADA:
           return styles.statusReserved;
-        case "LLAMANDO MOZO":
+        case EstadoMesa.OCUPADA:
+          return styles.statusOccupied;
+        case EstadoMesa.LLAMANDO:
           return styles.statusCallingWaiter;
-
           default:
           return {};
-      
     };
   
   }; 
@@ -70,18 +70,21 @@ export default function HomeScreen() {
           <View style={styles.tableInfo}>
             <Text style={styles.tableName}>{item.nombre}</Text>
             <Text style={styles.seats}> Lugares: 3 </Text>
-            
+
+          </View>
+          <View style={styles.statusContainer}>
+            <View style={[styles.statusBadge, getStatusStyle(item.estado)]}>
+            <Text style={styles.statusText}>{formatEnumText(Object.keys(EstadoMesa).find(key => EstadoMesa[key as keyof typeof EstadoMesa] === item.estado) || "UNKNOWN")}
+          
+            </Text>
+            </View>
+          </View>
+                      
             <Icon name="qr-code" size={30}  onPress={() => {
                 setSelectedTableQR(item);
                 setModalVisible(true);
               }} />
 
-          </View>
-          <View style={styles.statusContainer}>
-            <View style={[styles.statusBadge, getStatusStyle(item.estado)]}>
-              <Text style={styles.statusText}>{item.estado}</Text>
-            </View>
-          </View>
         </View>
         )}
       />

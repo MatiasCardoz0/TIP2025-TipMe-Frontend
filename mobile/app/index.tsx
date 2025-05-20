@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { NotificationProvider } from "./notificationContext";
-import HomeScreen from "./pages/homeScreen";
+import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { config } from './config';
+import RootLayout from "./_layout";
+import { AuthProvider } from "./context/AuthContext";
 
 export default function App() {
 
@@ -84,6 +84,6 @@ export default function App() {
     }
       
   return (
-      <HomeScreen />
+      <RootLayout/>
   );
 }

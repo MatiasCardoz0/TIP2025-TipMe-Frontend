@@ -1,17 +1,27 @@
 import { Stack } from "expo-router";
 import Navbar from "./components/NavBar";
-import HomeScreen from ".";
-import * as React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React, { useState } from "react";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import LoginScreen from "./pages/login";
 
-// export default function RootLayout() {
-//   //uso stack para navegar múltiples páginas
-// //   return (
-// //   <NavigationContainer>
-// //     <Stack.Navigator>
-// //       <Stack.Screen name="navbar" component={HomeScreen} options={{title: 'TipMe'}}/>
-// //     </Stack.Navigator>
-// //   </NavigationContainer>
-// //  );
-// };
+export default function RootLayout() {
+
+    const {authState, onLogout} = useAuth();
+
+    //uso stack para navegar múltiples páginas. 
+    // Expo router maneja la navegación entre pantallas, evita tener que usar react navigation y poner manualmente las rutas (<Stack.Screen name="homeScreen" component={HomeScreen} />, .etc)
+  return (
+  <AuthProvider>
+    {authState?.authenticated ? (
+        <>
+        <Navbar/>
+        <Stack
+        screenOptions={{
+          headerShown: false,
+        }}
+      />
+      </>)
+      : <LoginScreen />}
+  </AuthProvider>
+ );
+};
