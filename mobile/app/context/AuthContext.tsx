@@ -1,6 +1,7 @@
 import {createContext, useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 
 interface AuthProps {
     authState ? : { token: string | null; authenticated: boolean | null };
@@ -9,11 +10,11 @@ interface AuthProps {
     onLogout ? : () => Promise<any>;
 }
 
-const TOKEN_KEY = 'my-jwt';//
+const TOKEN_KEY = 'my-jwt';
 const API_URL = 'http://localhost:5065/api/auth';
 const AuthContext = createContext<AuthProps>({});
 
-  export const useAuth = () => {debugger
+  export const useAuth = () => {
    const context = useContext(AuthContext);
     if (!context) {
       throw new Error("useAuth se debe usar dentro del AuthProvider. chequear que AuthProvider esté envolviendo los componentes que lo usan");
@@ -28,11 +29,21 @@ const AuthContext = createContext<AuthProps>({});
       authenticated: null,
     });
 
-    useEffect(() => {debugger
+    useEffect(() => {
       const checkToken = async () => {
-        const token = await SecureStore.getItemAsync(TOKEN_KEY); //chequear si el token existe
-        console.log('token del storage:', token);
-        if (token) {
+        let token : string | null = null;
+        
+        try { //chequear si el token existe
+                if (Platform.OS === "web") { // Si estamos en la web usamos localStorage
+                    token = localStorage.getItem(TOKEN_KEY);
+                } else { // Si estamos en mobile usamos SecureStore
+                    token = await SecureStore.getItemAsync(TOKEN_KEY);
+                }
+                console.log('token del storage:', token);
+            } catch (error) {
+                console.warn("Error getting token from storage:", error);
+            }
+        if (token) {// Si el token existe, se guarda  y adjunta en headers para usar en todas las requests
           setAuthState({ token, authenticated: true });
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         } else {
@@ -41,7 +52,7 @@ const AuthContext = createContext<AuthProps>({});
       };
       checkToken();
     }, []);
-    
+
     const register = async (email: string, password: string) => {
       try {
         const response = await axios.post(`${API_URL}/register`, { email, password });
@@ -52,7 +63,7 @@ const AuthContext = createContext<AuthProps>({});
       }
     };
 
-    const login = async (email: string, password: string) => {debugger
+    const login = async (email: string, password: string) => {
         try {
             const response = await axios.post(`${API_URL}/login`, { email, password });
             const { token } = response.data;
@@ -61,9 +72,12 @@ const AuthContext = createContext<AuthProps>({});
             //adjuntar header a todas las request futuras para mostrar que el usuario está autenticado
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
 
-            //guardar el token en el secure storage de expo
-            await SecureStore.setItemAsync(TOKEN_KEY, token);
-
+                if (Platform.OS === "web") {// en la web usamos localStorage
+                  localStorage.setItem(TOKEN_KEY, token);
+                } else { 
+                  //en mobile guardar el token en el secure storage de expo
+                  await SecureStore.setItemAsync(TOKEN_KEY, token);
+                }
             return response.data;
         
         } catch (error: any) {
@@ -74,8 +88,11 @@ const AuthContext = createContext<AuthProps>({});
     const logout = async () => {
         try {
             //elimino el token del storage
+             if (Platform.OS === "web") {
+                localStorage.removeItem(TOKEN_KEY);
+            } else {
             await SecureStore.deleteItemAsync(TOKEN_KEY);
-
+            }
             //actualizo los headers
             axios.defaults.headers.common['Authorization'] = null;
 

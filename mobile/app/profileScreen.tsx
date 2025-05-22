@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { View, Text, Button, FlatList, StyleSheet, ActivityIndicator } from "react-native";
-import { useTables } from "../hooks/useTables";
-import Navbar from "../components/NavBar";
+import { useTables } from "./hooks/useTables";
+import Navbar from "./components/NavBar";
 
 export default function ProfileScreen() {
   const { tables, fetchTables, addTable, loading, error } = useTables();
@@ -18,7 +18,6 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
-         <Navbar />
         <View style={styles.content}>
         <Text>Perfil del Mozo</Text>
         {loading && <ActivityIndicator size="large" />}

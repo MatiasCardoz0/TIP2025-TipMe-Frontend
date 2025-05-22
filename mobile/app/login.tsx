@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from "react-native";
 //import TransparentLogo from "../../assets/images/TipMe_Logo_transparent.png";
-import { useAuth } from "../context/AuthContext";
-
+import { useAuth } from "./context/AuthContext";
+import { useRouter } from "expo-router";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { onLogin, onRegister } = useAuth();
+  const router = useRouter();
 
-
-  const handleLogin = async () => {debugger
+  const handleLogin = async () => {
     console.log("login button pressed");
       if (!onLogin) {
       window.alert("Error en Login");
@@ -18,10 +18,12 @@ export default function LoginScreen() {
   }
   const response = await onLogin?.(email, password);
   console.log("response from login", response);
-  debugger
   if (!response || response?.error) {
     Alert.alert("Error en Login");
     console.log("Error en Login ", response);
+  }
+  else {
+    router.replace("/home");
   }
 };
 

@@ -3,19 +3,21 @@ import axios from 'axios';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { config } from './config';
-import RootLayout from "./_layout";
+import AuthGate from "./components/RequireAuth";
 import { AuthProvider } from "./context/AuthContext";
+import { Redirect, Slot } from "expo-router";
+
 
 export default function App() {
 
     const [notification, setNotification] = useState<string | null>(null);
-    
+ 
     useEffect(() => { // se ejecuta una vez al cargar el componente
       registerForPushNotificationsAsync();
     });
     
     useEffect(() => {//se ejecuta cuando hay cambio de estado en la notificación
-      if (notification) {
+      if (notification) {debugger
         console.log("Notificación recibida:", notification);
         showNotification(notification); 
       }
@@ -26,7 +28,7 @@ export default function App() {
     const showNotification = (message: string) => {
       new Notification("TipMe", {
         body: message,
-        icon: "/path/to/icon.png", // Opcional
+        icon: "../assets/images/mobile/assets/images/TipMe_Logo_transparent.png",
       });
     };
         
@@ -83,7 +85,6 @@ export default function App() {
       };
     }
       
-  return (
-      <RootLayout/>
-  );
+  return <Redirect href="/login" />;
+
 }

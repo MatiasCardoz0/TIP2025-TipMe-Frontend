@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, FlatList, Button } from "react-native";
-import { useTables } from "../hooks/useTables";
-import Navbar from "../components/NavBar";
-import EstadoMesa from "../stateEnum";
-import { formatEnumText } from "../stateEnum";
+import { useTables } from "./hooks/useTables";
+import EstadoMesa from "./stateEnum";
+import { formatEnumText } from "./stateEnum";
 
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Modal } from "react-native";
@@ -59,7 +58,6 @@ export default function HomeScreen() {
       </View>
     </View>
   </Modal>
-      <Navbar/>
       <Text style= {styles.listItemsTitle}>Detalle de Mesas</Text>
       <FlatList 
         data={tables}
