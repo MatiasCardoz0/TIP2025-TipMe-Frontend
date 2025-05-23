@@ -43,6 +43,10 @@ body {
   color: #2c3e50;
 }
 
+.header {
+  background-color: #f4faff;
+}
+
 .main-content {
   display: flex;
   flex-direction: column;

@@ -1,128 +1,90 @@
-import React, { useEffect } from "react";
-import { Text, View, StyleSheet, FlatList, Button } from "react-native";
-import NavBar from "./components/NavBar";
-import { useTables } from "./hooks/useTables";
-import Navbar from "./components/NavBar";
+import React, { useState, useEffect } from "react";
+import axios from 'axios';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+import { config } from './config';
+import AuthGate from "./components/RequireAuth";
+import { AuthProvider } from "./context/AuthContext";
+import { Redirect, Slot } from "expo-router";
 
-export default function HomeScreen() {
 
-  const { tables, fetchTables, loading, error } = useTables();
+export default function App() {
+
+    const [notification, setNotification] = useState<string | null>(null);
+ 
+    useEffect(() => { // se ejecuta una vez al cargar el componente
+      registerForPushNotificationsAsync();
+    });
+    
+    useEffect(() => {//se ejecuta cuando hay cambio de estado en la notificación
+      if (notification) {debugger
+        console.log("Notificación recibida:", notification);
+        showNotification(notification); 
+      }
+        
+      }, [notification]
+    );
   
-    useEffect(() => {
-      fetchTables(); // Cargar las mesas al montar el componente
-      console.log(tables);
-    }, []);
-
-    //declaro el tipo de las propiedades de table
-    type Table = {
-      id: string;
-      nombre: string;
-      lugares: number;
-      estado: string;
+    const showNotification = (message: string) => {
+      new Notification("TipMe", {
+        body: message,
+        icon: "../assets/images/mobile/assets/images/TipMe_Logo_transparent.png",
+      });
     };
-
-
-    const getStatusStyle = (status:string) => {
-      switch (status) {
-        case "DISPONIBLE":
-          return styles.statusAvailable;
-        case "OCUPADA":
-          return styles.statusOccupied;
-        case "RESERVADA":
-          return styles.statusReserved;
-        case "LLAMANDO MOZO":
-          return styles.statusCallingWaiter;
-          //etc
-        default:
-          return {};
+        
+    // Configuración de notificaciones
+    const registerForPushNotificationsAsync = async () => {
       
-    };
-  
-  }; 
+          if (Constants.isDevice) {
+            const token = (await Notifications.getExpoPushTokenAsync()).data;
+            console.log('Push token:', token);
+            
+            // envia el token al servidor para que lo almacene y lo use para enviar notificaciones
+            await axios.post(`${config.API_URL}/api/waiter/register-push-token`, { ExpoToken: token, IdMozo: 1 }); 
+            
+          } else {
+            // manejo del caso en que se está ejecutando en un browser
+            if ("Notification" in window) {//verifica si el navegador soporta notificaciones
+              if (Notification.permission === "default") {
+                Notification.requestPermission().then((permission) => {
+                  if (permission === "granted") {
+                    console.log("Permiso para notificaciones concedido.");
+                    connectToWebSocket();
+                  } else {
+                    console.error("Permiso para notificaciones denegado.");
+                  }
+                });
+              } else if (Notification.permission === "granted") {
+                console.log("Permiso ya concedido.");
+                connectToWebSocket();
+        } else {
+          console.error("Permiso para notificaciones denegado.");
+        }
+      } else {
+        console.error("Este navegador no soporta notificaciones.");
+        }
+      }
+    }
 
-  return (
-    <View> 
-      <Navbar/>
-      <Text style= {styles.listItemsTitle}>Detalle de Mesas</Text>
-      <FlatList 
-        data={tables}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
+    const connectToWebSocket = () => {
+      //conectar al websocket server
+      const socket = new WebSocket(`${config.API_URL}/api/connect?userId=${1}&esMozo=${true}`);
+            
+      // Escuchar el evento de notificación
+      socket.onmessage = (event) => {
+        console.log("Mensaje recibido:", event.data);
+        setNotification(event.data); // Actualizar la notificación
+      };
+      
+      socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+      
+      return () => {
+        socket.close(); //cuando se desmonta el componente se cierra la conexión
+      };
+    }
+      
+  return <Redirect href="/login" />;
 
-          <View style={styles.tableContainer}>
-          <View style={styles.tableInfo}>
-            <Text style={styles.tableName}>{item.nombre}</Text>
-            <Text style={styles.seats}> Lugares: 3 </Text>
-          </View>
-          <View style={styles.statusContainer}>
-            <View style={[styles.statusBadge, getStatusStyle(item.estado)]}>
-              <Text style={styles.statusText}>{item.estado}</Text>
-            </View>
-          </View>
-        </View>
-        )}
-      />
-    </View>
-  )
 }
-
-const styles = StyleSheet.create({
-  tableContainer: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 12,
-    marginHorizontal: 16,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-  },
-  tableInfo: {
-    marginBottom: 12,
-  },
-  tableName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  seats: {
-    fontSize: 14,
-    color: '#667',
-  },
-  statusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  statusBadge: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-  },
-  statusAvailable: {
-    backgroundColor: '#4caf50',
-  },
-  statusOccupied: {
-    backgroundColor: '#f44336',
-  },
-  statusReserved: {
-    backgroundColor: '#ff9800',
-  },
-  statusCallingWaiter: {
-    backgroundColor: '#a231ee',
-  },
-  statusText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  listItemsTitle: {
-    margin: 20,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    alignSelf: "center",
-  }
-});
