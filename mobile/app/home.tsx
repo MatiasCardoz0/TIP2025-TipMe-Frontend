@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, FlatList, Button } from "react-native";
-import { useTables } from "./hooks/useTables";
+import { useTables } from "../src/hooks/useTables";
 import EstadoMesa from "./stateEnum";
 import { formatEnumText } from "./stateEnum";
 
@@ -40,6 +40,8 @@ export default function HomeScreen() {
           return styles.statusOccupied;
         case EstadoMesa.LLAMANDO:
           return styles.statusCallingWaiter;
+        case EstadoMesa.ESPERANDO_CUENTA:
+          return styles.statusWaitingBill;
           default:
           return {};
     };
@@ -57,7 +59,7 @@ export default function HomeScreen() {
         }} />
       </View>
     </View>
-  </Modal>
+    </Modal>
       <Text style= {styles.listItemsTitle}>Detalle de Mesas</Text>
       <FlatList 
         data={tables}
@@ -65,25 +67,36 @@ export default function HomeScreen() {
         renderItem={({ item }) => (
 
           <View style={styles.tableContainer}>
-          <View style={styles.tableInfo}>
-            <Text style={styles.tableName}>{item.nombre}</Text>
-            <Text style={styles.seats}> Lugares: 3 </Text>
-
-          </View>
-          <View style={styles.statusContainer}>
-            <View style={[styles.statusBadge, getStatusStyle(item.estado)]}>
-            <Text style={styles.statusText}>{formatEnumText(Object.keys(EstadoMesa).find(key => EstadoMesa[key as keyof typeof EstadoMesa] === item.estado) || "UNKNOWN")}
-          
-            </Text>
+            <View style={styles.row}>
+              <View style={{ flex: 1 }}>
+                <View style={styles.tableInfo}>
+                  <Text style={styles.tableName}>{item.nombre}</Text>
+                  <Text style={styles.seats}>Lugares: 3</Text>
+                </View>
+                <View style={styles.statusContainer}>
+                  <View style={[styles.statusBadge, getStatusStyle(item.estado)]}>
+                    <Text style={styles.statusText}>
+                      {formatEnumText(
+                        Object.keys(EstadoMesa).find(
+                          key => EstadoMesa[key as keyof typeof EstadoMesa] === item.estado
+                        ) || "UNKNOWN"
+                      )}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.qrIconContainer}>
+                <Icon
+                  name="qr-code"
+                  size={30}
+                  onPress={() => {
+                    setSelectedTableQR(item);
+                    setModalVisible(true);
+                  }}
+                />
+              </View>
             </View>
           </View>
-                      
-            <Icon name="qr-code" size={30}  onPress={() => {
-                setSelectedTableQR(item);
-                setModalVisible(true);
-              }} />
-
-        </View>
         )}
       />
     </View>
@@ -94,20 +107,20 @@ const styles = StyleSheet.create({
   container:{
     flex: 1,
     justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    paddingHorizontal: 10,
+    width: '100%',
+    padding: 15,
   },
   tableContainer: {
     backgroundColor: '#fff',
     padding: 20,
     borderRadius: 12,
     marginBottom: 12,
-    marginHorizontal: 16,
     elevation: 3,
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
+
   },
   tableInfo: {
     marginBottom: 12,
@@ -144,6 +157,9 @@ const styles = StyleSheet.create({
   statusCallingWaiter: {
     backgroundColor: '#a231ee',
   },
+  statusWaitingBill: {
+    backgroundColor: '#2196f3',
+  },
   statusText: {
     color: '#fff',
     fontWeight: 'bold',
@@ -169,4 +185,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
   },
+  row: {
+  flexDirection: "row",
+  alignItems: "center",
+  width: "100%",
+},
+qrIconContainer: {
+  justifyContent: "center",
+  alignItems: "flex-end",
+  paddingLeft: 10,
+},
 });
