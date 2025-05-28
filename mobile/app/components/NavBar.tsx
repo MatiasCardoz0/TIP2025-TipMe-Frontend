@@ -15,10 +15,10 @@ export default function Navbar() {
           <Icon name="home" size={30} color="#fff" onPress={() => router.push("/")} />
           <Text style={styles.label}>Inicio</Text>
         </View>
-        <View style={styles.iconItem}>
+        {/* <View style={styles.iconItem}>
           <Icon name="notifications" size={30} color="#fff" onPress={() => router.push("/pages/notificationScreen")} />
           <Text style={styles.label}>Notificaciones</Text>
-        </View>
+        </View> */}
         <View style={styles.iconItem}>
           <Icon name="credit-score" size={30} color="#fff" onPress={() => router.push("/pages/tipsScreen")} />
           <Text style={styles.label}>Propinas</Text>
