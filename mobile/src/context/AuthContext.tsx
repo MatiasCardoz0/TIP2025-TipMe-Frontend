@@ -8,6 +8,7 @@ interface AuthProps {
     onRegister ? : (email: string, password: string) => Promise<any>;
     onLogin ? : (email: string, password: string) => Promise<any>;
     onLogout ? : () => Promise<any>;
+    loading ? : boolean;
 }
 
 const TOKEN_KEY = 'my-jwt';
@@ -26,8 +27,9 @@ const AuthContext = createContext<AuthProps>({});
 
     const [authState, setAuthState] = useState<{ token: string | null; authenticated: boolean | null }>({
       token: null,
-      authenticated: null,
+      authenticated: false,
     });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
       const checkToken = async () => {
@@ -35,7 +37,7 @@ const AuthContext = createContext<AuthProps>({});
         
         try { //chequear si el token existe
                 if (Platform.OS === "web") { // Si estamos en la web usamos localStorage
-                    token = localStorage.getItem(TOKEN_KEY);
+                    token = await localStorage.getItem(TOKEN_KEY);
                 } else { // Si estamos en mobile usamos SecureStore
                     token = await SecureStore.getItemAsync(TOKEN_KEY);
                 }
@@ -49,6 +51,7 @@ const AuthContext = createContext<AuthProps>({});
         } else {
           setAuthState({ token: null, authenticated: false });
         }
+        setLoading(false); // Termina el loading una vez que se chequea el token
       };
       checkToken();
     }, []);
@@ -108,7 +111,8 @@ const AuthContext = createContext<AuthProps>({});
             onRegister: register,
             onLogin: login,
             onLogout: logout,
-            authState
+            authState,
+            loading
         };
       
         return (

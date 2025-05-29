@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, FlatList, Button } from "react-native";
+import { Text, View, StyleSheet, FlatList, Button, TextInput } from "react-native";
 import { useTables } from "../src/hooks/useTables";
 import EstadoMesa from "./stateEnum";
 import { formatEnumText } from "./stateEnum";
@@ -14,7 +14,10 @@ export default function HomeScreen() {
   const [notification, setNotification] = useState<string | null>(null);
 
   const [modalVisible, setModalVisible] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
   const [selectedTableQR, setSelectedTableQR] = useState<Table | null>(null);
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
   
     useEffect(() => {
       fetchTables(); // Cargar las mesas al montar el componente
@@ -30,23 +33,38 @@ export default function HomeScreen() {
       qr: string;
     };
 
-        const getStatusStyle = (estado:number) => {
+    const getStatusStyle = (estado:number) => {
       switch (estado) {
-        case EstadoMesa.DISPONIBLE:
-          return styles.statusAvailable;
-        case EstadoMesa.RESERVADA:
-          return styles.statusReserved;
-        case EstadoMesa.OCUPADA:
-          return styles.statusOccupied;
-        case EstadoMesa.LLAMANDO:
-          return styles.statusCallingWaiter;
-        case EstadoMesa.ESPERANDO_CUENTA:
-          return styles.statusWaitingBill;
-          default:
-          return {};
-    };
+          case EstadoMesa.DISPONIBLE:
+            return styles.statusAvailable;
+          case EstadoMesa.RESERVADA:
+            return styles.statusReserved;
+          case EstadoMesa.OCUPADA:
+            return styles.statusOccupied;
+          case EstadoMesa.LLAMANDO:
+            return styles.statusCallingWaiter;
+          case EstadoMesa.ESPERANDO_CUENTA:
+            return styles.statusWaitingBill;
+            default:
+            return {};
+        };
   
-  }; 
+    }; 
+
+    const newTable = () => {
+        const newTable: Table = {
+          nombre: name,
+          id: number,
+          lugares: 2,
+          estado: EstadoMesa.DISPONIBLE,
+          qr: `https://miapp.com/mesa${number}`,
+        };
+
+        addTable(newTable);
+      };
+
+
+
 
   return (
     <View style={styles.container}> 
@@ -60,7 +78,30 @@ export default function HomeScreen() {
       </View>
     </View>
     </Modal>
+    <Modal visible={addModalVisible} transparent animationType="slide">
+      <View style={styles.smallModalContainer}>
+        <Text style={styles.tableName}>Agregar Mesa</Text>
+        <View style={styles.modalContent}>
+          <TextInput
+            placeholder="Nombre de la mesa"
+            value={name}
+            onChangeText={(text) => setName(text)}
+            style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, marginBottom: 10 }}
+          />
+          <TextInput
+            placeholder="Numero de Lugares"
+            value={number}
+            onChangeText={(text) => setNumber(text)}
+            keyboardType="numeric"
+            style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, marginBottom: 10 }}
+          />
+          <Button title="Agregar Mesa" onPress={() => {newTable(); setAddModalVisible(false)}} />
+          <Button title="Cerrar" onPress={() => setAddModalVisible(false)} />
+        </View>
+      </View>
+    </Modal>
       <Text style= {styles.listItemsTitle}>Detalle de Mesas</Text>
+      <Button title="Agregar Mesa" onPress={() => setAddModalVisible(true)} />
       <FlatList 
         data={tables}
         keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
@@ -195,4 +236,20 @@ qrIconContainer: {
   alignItems: "flex-end",
   paddingLeft: 10,
 },
+  smallModalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  smallModalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+  },
 });
+
+function addTable(newTable: { id: string; nombre: string; lugares: number; estado: number; qr: string; }) {
+  throw new Error("Function not implemented.");
+}
