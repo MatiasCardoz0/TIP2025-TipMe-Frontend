@@ -12,7 +12,7 @@ export default function Navbar() {
     <View style={styles.navbar}>
       <View style={styles.leftIcons}>
         <View style={styles.iconItem}>
-          <Icon name="home" size={30} color="#fff" onPress={() => router.push("/")} />
+          <Icon name="home" size={30} color="#fff" onPress={() => router.push("../home")} />
           <Text style={styles.label}>Inicio</Text>
         </View>
         {/* <View style={styles.iconItem}>
@@ -20,7 +20,7 @@ export default function Navbar() {
           <Text style={styles.label}>Notificaciones</Text>
         </View> */}
         <View style={styles.iconItem}>
-          <Icon name="credit-score" size={30} color="#fff" onPress={() => router.push("/pages/tipsScreen")} />
+          <Icon name="credit-score" size={30} color="#fff" onPress={() => router.push("../tipsScreen")} />
           <Text style={styles.label}>Propinas</Text>
         </View>
         <View style={styles.iconItem}>

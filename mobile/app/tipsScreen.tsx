@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Button, FlatList, StyleSheet, Dimensions } from "react-native";
-import { useTips } from "../hooks/useTips";
-import Navbar from "../components/NavBar";
+import { useTips } from "../src/hooks/useTips";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import RNPickerSelect from "react-native-picker-select";
 
@@ -58,7 +57,6 @@ export default function TipsScreen(){
       
     return(
         <View style={styles.container}>
-            <Navbar />
             <View>
             <Text style={styles.title}>Resumen de propinas</Text>
             </View>
