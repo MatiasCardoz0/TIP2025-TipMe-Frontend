@@ -26,7 +26,7 @@ export const useTables = () => {
   // POST Mesas (Agregar una nueva mesa)
   const addTable = async (newTable: any) => {
     try {
-      const response = await fetch(config.API_URL+"/api/mesa", {
+      const response = await fetch(config.API_URL+"/api/mesa/grabar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

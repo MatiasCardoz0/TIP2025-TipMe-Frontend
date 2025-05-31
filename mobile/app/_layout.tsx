@@ -1,4 +1,3 @@
-import { Slot } from "expo-router";
 import { AuthProvider } from "../src/context/AuthContext";
 import { useNotifications } from "@/src/hooks/useNotifications";
 import MainLayout from "./MainLayout";

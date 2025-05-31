@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, FlatList, Button, TextInput } from "react-native";
+import { Text, View, StyleSheet, FlatList, Button, TextInput, TouchableOpacity } from "react-native";
 import { useTables } from "../src/hooks/useTables";
 import EstadoMesa from "./stateEnum";
 import { formatEnumText } from "./stateEnum";
@@ -10,7 +10,7 @@ import QRCode  from "react-native-qrcode-svg";
 
 export default function HomeScreen() {
 
-  const { tables, fetchTables, loading, error } = useTables();
+  const { tables, fetchTables, addTable, loading, error } = useTables();
   const [notification, setNotification] = useState<string | null>(null);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -51,16 +51,18 @@ export default function HomeScreen() {
   
     }; 
 
-    const newTable = () => {
-        const newTable: Table = {
+    const newTable = async () => {
+        const newTable = {
           nombre: name,
-          id: number,
-          lugares: 2,
+          numero: number,
+          mozoId: 1,
           estado: EstadoMesa.DISPONIBLE,
           qr: `https://miapp.com/mesa${number}`,
         };
-
-        addTable(newTable);
+        await addTable(newTable);
+        fetchTables();
+        setName("");
+        setNumber("");
       };
 
 
@@ -80,28 +82,28 @@ export default function HomeScreen() {
     </Modal>
     <Modal visible={addModalVisible} transparent animationType="slide">
       <View style={styles.smallModalContainer}>
-        <Text style={styles.tableName}>Agregar Mesa</Text>
-        <View style={styles.modalContent}>
+        <View style={styles.AddTableModalContent}>
+        <Text style={styles.tableName}>Nueva Mesa</Text>
           <TextInput
             placeholder="Nombre de la mesa"
             value={name}
             onChangeText={(text) => setName(text)}
-            style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, marginBottom: 10 }}
+            style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
           />
           <TextInput
-            placeholder="Numero de Lugares"
+            placeholder="Numero de mesa"
             value={number}
             onChangeText={(text) => setNumber(text)}
             keyboardType="numeric"
-            style={{ borderWidth: 1, borderColor: '#ccc', padding: 10, marginBottom: 10 }}
+            style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
           />
-          <Button title="Agregar Mesa" onPress={() => {newTable(); setAddModalVisible(false)}} />
+          <Button title="Confirmar" onPress={() => {newTable(); setAddModalVisible(false)}} />
           <Button title="Cerrar" onPress={() => setAddModalVisible(false)} />
         </View>
       </View>
     </Modal>
-      <Text style= {styles.listItemsTitle}>Detalle de Mesas</Text>
-      <Button title="Agregar Mesa" onPress={() => setAddModalVisible(true)} />
+      <Text style= {styles.listItemsTitle}>Mis Mesas</Text>
+      <TouchableOpacity style={styles.addTableButton} onPress={() => setAddModalVisible(true)} ><Text style={{color: "#339CFF"}}>╋ Agregar Mesa</Text></TouchableOpacity>
       <FlatList 
         data={tables}
         keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#a231ee',
   },
   statusWaitingBill: {
-    backgroundColor: '#2196f3',
+    backgroundColor: '#df5722',
   },
   statusText: {
     color: '#fff',
@@ -240,16 +242,22 @@ qrIconContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.23)",
   },
-  smallModalContent: {
-    backgroundColor: "#fff",
-    padding: 20,
+  AddTableModalContent: {
+    backgroundColor: "rgba(185, 197, 209, 0.82)64)",
+    borderWidth: 1,
+    padding: 40,
     borderRadius: 10,
-    width: '80%',
+    borderColor: "#339CFF",
+    alignItems: "center",
+  },
+  addTableButton: {
+    color: "#339CFF",
+    backgroundColor: "white",
+    marginBottom: 20,
+    padding: 10,
+    borderRadius: 5,
   },
 });
 
-function addTable(newTable: { id: string; nombre: string; lugares: number; estado: number; qr: string; }) {
-  throw new Error("Function not implemented.");
-}
