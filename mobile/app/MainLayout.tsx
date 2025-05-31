@@ -10,7 +10,6 @@ export default function MainLayout() {
   const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
 
-
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -33,7 +32,7 @@ export default function MainLayout() {
 
    return (
     <>
-      <Navbar />
+      { pathname != "/login" && <Navbar />}
       <Slot />
     </>
   );

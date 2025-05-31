@@ -24,7 +24,7 @@ export default function Navbar() {
           <Text style={styles.label}>Propinas</Text>
         </View>
         <View style={styles.iconItem}>
-          <Icon name="add-location-alt" size={30} color="#fff" onPress={() => router.push("/pages/tableLocationScreen")} />
+          <Icon name="add-location-alt" size={30} color="#fff" onPress={() => router.push("../tableLocationScreen")} />
           <Text style={styles.label}>Mesas</Text>
         </View>
       </View>

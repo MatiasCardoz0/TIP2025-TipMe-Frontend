@@ -69,8 +69,8 @@ export const useTables = () => {
   // DELETE Mesas (Borra una mesa)
   const deleteTable = async (id: number) => {
     try {
-      const response = await fetch(config.API_URL+"/api/mesa/borrar/${id}", {
-        method: "DELETE",       
+      const response = await fetch(config.API_URL+"/api/mesa/borrar/"+id, {
+        method: "DELETE", 
       });
       if (!response.ok) {
         throw new Error("Error al eliminar la mesa");

@@ -12,8 +12,8 @@ import {
 import { Modal, useWindowDimensions } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import Navbar from "../components/NavBar";
-import { useTables } from "../hooks/useTables";
+import Navbar from "./components/NavBar";
+import { useTables } from "../src/hooks/useTables";
 import { Int32 } from "react-native/Libraries/Types/CodegenTypes";
 
 export default function MapaMesas() {
@@ -146,7 +146,6 @@ export default function MapaMesas() {
 
   return (
     <View style={styles.container}>
-      <Navbar />
       <Text style={styles.title}>Mapa de Mesas</Text>
       <GestureHandlerRootView style={styles.gestureContainer}>
         <Svg width={width * 0.6} height={height * 0.8}>
@@ -246,6 +245,7 @@ export default function MapaMesas() {
                 name="delete"
                 size={30}
                 onPress={() => {
+                  deleteTable(mesaSeleccionada);
                   setMenuVisible(false);
                 }}
               />
