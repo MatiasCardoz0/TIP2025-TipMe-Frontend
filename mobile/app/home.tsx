@@ -97,8 +97,14 @@ export default function HomeScreen() {
             keyboardType="numeric"
             style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
           />
-          <Button title="Confirmar" onPress={() => {newTable(); setAddModalVisible(false)}} />
-          <Button title="Cerrar" onPress={() => setAddModalVisible(false)} />
+          <View style={styles.statusContainer}>
+            <View style={styles.menuConfirmacion}>
+              <Button title="Confirmar" onPress={() => {newTable(); setAddModalVisible(false)}} />
+            </View>
+            <View style={styles.menuConfirmacion}>
+              <Button title="Cerrar" onPress={() => setAddModalVisible(false)} />
+            </View>
+          </View>
         </View>
       </View>
     </Modal>
@@ -172,6 +178,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
+    padding: 10
   },
   seats: {
     fontSize: 14,
@@ -258,6 +265,12 @@ qrIconContainer: {
     marginBottom: 20,
     padding: 10,
     borderRadius: 5,
+  },
+  menuConfirmacion: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    margin: 3,
+    
   },
 });
 

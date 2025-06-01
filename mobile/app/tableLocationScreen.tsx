@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Button } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Button, TextInput } from "react-native";
 import Svg, { Rect } from "react-native-svg";
 import {
   GestureHandlerRootView,
@@ -30,8 +30,10 @@ export default function MapaMesas() {
   const [modalQRVisible, setModalQRVisible] = useState(false);
   const [selectedTableQR, setSelectedTableQR] = useState<Table | null>(null);
   const [nuevoEstado, setNuevoEstado] = useState("");
-  const { tables, setTables, fetchTables, updateTable, deleteTable, error } =
-    useTables();
+  const { tables, setTables, addTable ,fetchTables, updateTable, deleteTable, error } = useTables();
+  const [addModalVisible, setAddModalVisible] = useState(false);
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
 
   useEffect(() => {
     fetchTables();
@@ -46,6 +48,20 @@ export default function MapaMesas() {
     x: Int32;
     y: Int32;
   };
+
+   const newTable = async () => {
+        const newTable = {
+          nombre: name,
+          numero: number,
+          mozoId: 1,
+          estado: 1,
+          qr: `https://miapp.com/mesa${number}`,
+        };
+        await addTable(newTable);
+        fetchTables();
+        setName("");
+        setNumber("");
+      };
 
   const handleLongPress = (index: number) => {
     setMenuVisible(true);
@@ -78,7 +94,7 @@ export default function MapaMesas() {
         posicionX: tables[mesaSeleccionada].posicionX,
         posicionY: tables[mesaSeleccionada].posicionY,
       });
-      console.log(posicionOriginal);
+      
     }
   };
 
@@ -98,16 +114,18 @@ export default function MapaMesas() {
         i === mesaSeleccionada
           ? {
               ...mesa,
-              posicionX: absoluteX - width * 0.2,
-              posicionY: absoluteY - height / 6.5,
+              //posicionX: absoluteX - width * 0.04,
+              //posicionY: absoluteY - height / 3.5,
+              posicionX: Math.max(10, Math.min(absoluteX - width * 0.04, width - 80)),
+              posicionY: Math.max(10, Math.min(absoluteY - height / 3.5, height - 270)),
             }
           : mesa
       )
     );
 
     setMenuPos({
-      x: absoluteX - width * 0.2 + 50,
-      y: absoluteY - height / 6.5 - 20,
+      x: absoluteX - width * 0.04 + 50,
+      y: absoluteY - height / 3.5 - 20,
     });
   };
 
@@ -147,9 +165,40 @@ export default function MapaMesas() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mapa de Mesas</Text>
+      <Modal visible={addModalVisible} transparent animationType="slide">
+            <View style={styles.smallModalContainer}>
+              <View style={styles.AddTableModalContent}>
+              <Text style={styles.newTableName}>Nueva Mesa</Text>
+                <TextInput
+                  placeholder="Nombre de la mesa"
+                  value={name}
+                  onChangeText={(text) => setName(text)}
+                  style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+                />
+                <TextInput
+                  placeholder="Numero de mesa"
+                  value={number}
+                  onChangeText={(text) => setNumber(text)}
+                  keyboardType="numeric"
+                  style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+                />
+                <View style={styles.statusContainer}>
+                  <View style={styles.menuConfirmacion}>
+                    <Button title="Confirmar" onPress={() => {newTable(); setAddModalVisible(false); fetchTables();}} />
+                  </View>
+                  <View style={styles.menuConfirmacion}>
+                    <Button title="Cerrar" onPress={() => setAddModalVisible(false)} />
+                  </View>
+                </View>
+              </View>
+            </View>
+          </Modal>
+          <View style={styles.agregarBoton}>
+            <TouchableOpacity style={styles.addTableButton} onPress={() => setAddModalVisible(true)} ><Text style={{color: "#339CFF"}}>╋ Agregar Mesa</Text></TouchableOpacity>
+          </View>
       <GestureHandlerRootView style={styles.gestureContainer}>
-        <Svg width={width * 0.6} height={height * 0.8}>
-          <Rect width={width * 0.6} height={height * 0.8} fill="#ddd" />
+        <Svg width={width * 0.9} height={height * 0.75}>
+          <Rect width="100%" height="100%" fill="#ddd" />
         </Svg>
         <Modal visible={modalQRVisible} transparent animationType="slide">
           <View style={styles.modalContainer}>
@@ -245,8 +294,9 @@ export default function MapaMesas() {
                 name="delete"
                 size={30}
                 onPress={() => {
-                  deleteTable(mesaSeleccionada);
+                  deleteTable(tables[mesaSeleccionada].id);
                   setMenuVisible(false);
+                  setMesaSeleccionada(0);
                 }}
               />
               <Text style={styles.menuIconContainer}>Borrar</Text>
@@ -343,6 +393,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#f0f0f0",
+    height: "100%", overflow: "hidden"
   },
   mesa: {
     position: "absolute",
@@ -397,6 +448,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#ffffff",
   },
+  newTableName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    padding: 10
+  },
   menuIconContainer: {
     alignItems: "center",
     fontSize: 10,
@@ -439,4 +496,41 @@ const styles = StyleSheet.create({
     color: "#333",
     alignSelf: "center",
   },
+  addTableButton: {
+    color: "#339CFF",
+    //backgroundColor: "white",
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 5,
+    marginLeft: 10
+  },
+  smallModalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.23)",
+  },
+  AddTableModalContent: {
+    backgroundColor: "rgba(185, 197, 209, 0.82)64)",
+    borderWidth: 1,
+    padding: 40,
+    borderRadius: 10,
+    borderColor: "#339CFF",
+    alignItems: "center",
+  },
+  menuConfirmacion: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    margin: 3,
+    
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  agregarBoton : {
+    flexDirection : "row",
+    width: "100%"
+  }
 });
