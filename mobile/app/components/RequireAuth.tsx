@@ -1,10 +1,17 @@
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../src/context/AuthContext';
 import { ActivityIndicator, View } from 'react-native';
-import { Redirect } from 'expo-router'; 
+import { Redirect, useRootNavigationState } from 'expo-router'; 
 
+// este componente es para proteger las rutas de la app, si el usuario no esta autenticado lo redirige a la pantalla de login
 const AuthGate = ({ children }: { children: React.ReactNode }) => {
   const { authState } = useAuth();
+  const rootNavigationState = useRootNavigationState();
+ console.log("authState:", authState);
+  if (!rootNavigationState?.key) {
+    console.log("authState:", authState);
+    return null;
+  }
 
   if (authState?.authenticated === null) {
     return (
@@ -13,7 +20,7 @@ const AuthGate = ({ children }: { children: React.ReactNode }) => {
       </View>
     );
   }
-
+  
   if (!authState?.authenticated) {
     return <Redirect href="../login" />;
   }

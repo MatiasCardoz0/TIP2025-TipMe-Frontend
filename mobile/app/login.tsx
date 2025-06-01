@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from "react-native";
 //import TransparentLogo from "../../assets/images/TipMe_Logo_transparent.png";
-import { useAuth } from "./context/AuthContext";
+import { useAuth } from "../src/context/AuthContext";
 import { useRouter } from "expo-router";
 
 export default function LoginScreen() {

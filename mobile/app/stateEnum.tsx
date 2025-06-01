@@ -2,7 +2,8 @@ const EstadoMesa = {
     DISPONIBLE: 1,
     RESERVADA: 2,
     OCUPADA: 3,
-    LLAMANDO: 4
+    LLAMANDO: 4,
+    ESPERANDO_CUENTA: 8
 };
 
 export const formatEnumText = (text: string) => {
