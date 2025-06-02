@@ -2,12 +2,46 @@ import React from "react";
 import { useState } from 'react';
 import "./TipModal.css";
 import axios from 'axios';
+import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+
+
+
 
 function TipModal({openModal}) {
 
     const [amount, setAmount] = useState("");
     const [success, setSuccess] = useState(false);
-    const [errorMsg, setErrorMsg] = useState("");
+    const [preferenceId, setPreferenceId] = useState(null);
+
+    // Inicializa Mercado Pago con tu public key
+    initMercadoPago('YOUR_PUBLIC_KEY', {
+        locale: "es-AR"
+    });
+
+    const createPreference = async () => {
+        try
+        {
+            const response = await axios.post("http://localhost:5065/api/mp/getPreferenceId", {
+                "monto": amount,
+                "fecha": new Date().toISOString(),
+                "idMesa": 10,
+                "idMozo": 1 
+            });
+    
+            const {id} = response.data;
+            return id;
+        }
+        catch(error){
+            console.log(error)
+        }
+    };
+
+    const handleBuy = async () => {
+        const id = await createPreference();
+        if(id){
+            setPreferenceId(id);
+        }
+    };
 
     const saveTip = async () => {
         if (!amount || parseFloat(amount) <= 0) {
@@ -15,11 +49,12 @@ function TipModal({openModal}) {
             return;
         }
         try {
-        const response = await axios.post("http://localhost:5065/api/propina/grabar", {
-            "monto": amount,
-            "fecha": new Date().toISOString(),
-            "idMesa": 10,
-            "idMozo": 1 
+            handleBuy();
+            const response = await axios.post("http://localhost:5065/api/propina/grabar", {
+                "monto": amount,
+                "fecha": new Date().toISOString(),
+                "idMesa": 10,
+                "idMozo": 1 
         });
     
         if (response.status === 200) {
@@ -52,10 +87,18 @@ function TipModal({openModal}) {
                                 <input type="number" placeholder="Ingrese cantidad" value={amount} onChange={(e) => setAmount(e.target.value)} />
                                 { errorMsg !== '' && <div className="error-msg"> {errorMsg} </div> }
                             </div>
-                            <button className="modal-button" onClick={saveTip}>Continuar</button>
-                            <button className="modal-button" onClick={() => openModal(false)}>Cancelar</button>
-                    </div>
-                </>
+                            {/* ---------------MP inicio */}
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>                            
+                            {/* Renderiza el botón de pago */}
+                            {preferenceId &&
+                            <div style={{ width: '300px' }}>
+                                <Wallet initialization={{ preferenceId: 'YOUR_PREFERENCE_ID' }} />
+                            </div>}
+                            </div>
+                            {/* ----------------MP fin */}
+                                {!preferenceId && <button className="modal-button" onClick={saveTip}>Continuar</button>}
+                                <button className="modal-button" onClick={() => openModal(false)}>Cancelar</button>
+                        </div></>
                 )}
             </div>
         </div>
