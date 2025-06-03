@@ -14,21 +14,15 @@ function TipModal({openModal}) {
     const [preferenceId, setPreferenceId] = useState(null);
 
     // Inicializa Mercado Pago con tu public key
-    initMercadoPago('YOUR_PUBLIC_KEY', {
+    initMercadoPago('PUBLIC KEY A LLENAR', {
         locale: "es-AR"
     });
 
     const createPreference = async () => {
         try
         {
-            const response = await axios.post("http://localhost:5065/api/mp/getPreferenceId", {
-                "monto": amount,
-                "fecha": new Date().toISOString(),
-                "idMesa": 10,
-                "idMozo": 1 
-            });
-    
-            const {id} = response.data;
+            const response = await axios.get("http://localhost:5065/api/mp/preferenceId/"+amount);
+            const id = response.data.data.preferenceId;
             return id;
         }
         catch(error){
@@ -92,7 +86,7 @@ function TipModal({openModal}) {
                             {/* Renderiza el botón de pago */}
                             {preferenceId &&
                             <div style={{ width: '300px' }}>
-                                <Wallet initialization={{ preferenceId: 'YOUR_PREFERENCE_ID' }} />
+                                <Wallet initialization={{ preferenceId: preferenceId }} />
                             </div>}
                             </div>
                             {/* ----------------MP fin */}
