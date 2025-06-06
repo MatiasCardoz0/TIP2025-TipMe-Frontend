@@ -9,8 +9,11 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const { onLogin, onRegister } = useAuth();
   const router = useRouter();
+    const [errorMsg, setErrmsg] = useState("");
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      setErrmsg("Debes ingresar email y contraseña");}
     console.log("login button pressed");
       if (!onLogin) {
       window.alert("Error en Login");
@@ -19,7 +22,7 @@ export default function LoginScreen() {
   const response = await onLogin?.(email, password);
   console.log("response from login", response);
   if (!response || response?.error) {
-    Alert.alert("Error en Login");
+    setErrmsg("Email y/o contraseña incorrectos");
     console.log("Error en Login ", response);
   }
   else {
@@ -38,7 +41,6 @@ const handleRegister = async () => {
 //<Image source={TransparentLogo} style={{ width: 100, height: 100 }} />
   return (
     <View style={styles.container}>
-      
       <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
@@ -55,6 +57,7 @@ const handleRegister = async () => {
         value={password}
         onChangeText={(text:string)=> setPassword(text)}
       />
+      {errorMsg ? <Text style={{ color: "red" }}>{errorMsg}</Text> : null}
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
