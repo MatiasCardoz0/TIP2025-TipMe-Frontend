@@ -49,6 +49,10 @@ export default function MapaMesas() {
     y: Int32;
   };
 
+      const isInteger = (value: string) => {
+  return /^\d+$/.test(value);
+};
+
    const newTable = async () => {
         const newTable = {
           nombre: name,
@@ -182,9 +186,11 @@ export default function MapaMesas() {
                   keyboardType="numeric"
                   style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
                 />
+                {!isInteger(number) && number.length > 0 && (
+        <Text style={{ color: "red", marginBottom: 8, fontSize:12,padding:0, marginLeft:-40, marginRight:-40 }}>Ingrese un número entero para identificar la mesa</Text>)}
                 <View style={styles.statusContainer}>
                   <View style={styles.menuConfirmacion}>
-                    <Button title="Confirmar" onPress={() => {newTable(); setAddModalVisible(false); fetchTables();}} />
+                    <Button title="Confirmar" onPress={() => {newTable(); setAddModalVisible(false); fetchTables();}} disabled={!name.trim() || !number.trim()|| !isInteger(number)} />
                   </View>
                   <View style={styles.menuConfirmacion}>
                     <Button title="Cerrar" onPress={() => setAddModalVisible(false)} />
