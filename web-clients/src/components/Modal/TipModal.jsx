@@ -11,6 +11,7 @@ function TipModal({openModal}) {
 
     const [amount, setAmount] = useState("");
     const [success, setSuccess] = useState(false);
+    const [errorMsg, setErrorMsg] = useState("");
     const [preferenceId, setPreferenceId] = useState(null);
 
     // Inicializa Mercado Pago con tu public key
@@ -39,7 +40,7 @@ function TipModal({openModal}) {
 
     const saveTip = async () => {
         if (!amount || parseFloat(amount) <= 0) {
-            alert("Por favor, ingresá un monto válido.");
+            setErrorMsg("Por favor, ingresá un monto válido.");
             return;
         }
         try {
@@ -61,24 +62,25 @@ function TipModal({openModal}) {
       }
         catch (error){
           console.log("Error en el servidor." + error);
-          }
-    
-      
-      }
+        }
+    }
 
     return (
         <div className="modal-window">
             <div className="modal-container">
             {success ? (
             <>
-            <h2>¡Gracias por su colaboración! </h2>
+            <h2> ¡Gracias por su colaboración! </h2>
             <button className="modal-button" onClick={() => openModal(false)}>Cerrar</button>
             </>) :
                 (
-                <><h2>Enviando propina</h2><div className="form-container">
+                <>
+                    <h2>Enviando propina</h2>
+                    <div className="form-container">
                             <div className="input-row">
                                 <span className="currency-symbol">$</span>
                                 <input type="number" placeholder="Ingrese cantidad" value={amount} onChange={(e) => setAmount(e.target.value)} />
+                                { errorMsg !== '' && <div className="error-msg"> {errorMsg} </div> }
                             </div>
                             {/* ---------------MP inicio */}
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '50px' }}>                            

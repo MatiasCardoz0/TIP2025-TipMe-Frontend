@@ -69,5 +69,9 @@
   .modal-button:hover {
     background-color: #007BFF;
 }
-  
-  
+
+.error-msg{
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
