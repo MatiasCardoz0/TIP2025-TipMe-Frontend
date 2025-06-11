@@ -102,7 +102,7 @@ export default function HomeScreen() {
         <Text style={{ color: "red", marginBottom: 8, fontSize:12.5 }}>Ingrese un número entero para identificar la mesa</Text>)}
 
           <View style={{ margin: 2 }}>
-            <Button title="Confirmar" onPress={() => {newTable(); setAddModalVisible(false)}} disabled={!name.trim() || !number.trim()|| !isInteger(number)} />
+            <Button title="Confirmar" testID="confirmar-btn" onPress={() => {newTable(); setAddModalVisible(false)}} disabled={!name.trim() || !number.trim()|| !isInteger(number)} />
           </View>
           <View style={{ margin: 2 }}>
             <Button title="Cerrar" onPress={() => setAddModalVisible(false)} />
