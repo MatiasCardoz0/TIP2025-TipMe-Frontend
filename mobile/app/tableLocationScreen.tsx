@@ -57,7 +57,7 @@ export default function MapaMesas() {
         const newTable = {
           nombre: name,
           numero: number,
-          mozoId: 1,
+          mozoId: localStorage.getItem("userId") || "0",
           estado: 1,
           qr: `https://miapp.com/mesa${number}`,
         };

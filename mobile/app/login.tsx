@@ -26,6 +26,7 @@ export default function LoginScreen() {
     console.log("Error en Login ", response);
   }
   else {
+    localStorage.setItem("userId", response.id);
     router.replace("/home");
   }
 };

@@ -59,8 +59,9 @@ export const useNotifications = (userId: number) => {
   };
 
   const connectToWebSocket = () => {
+    userId = localStorage.getItem("userId") ? parseInt(localStorage.getItem("userId") || "0") : 0;
     const socket = new WebSocket(
-      `${config.API_URL}/api/connect?userId=${1}&esMozo=${true}`
+      `${config.API_URL}/api/connect?userId=${userId}&esMozo=${true}`
     );
 
     socket.onmessage = (event) => {
