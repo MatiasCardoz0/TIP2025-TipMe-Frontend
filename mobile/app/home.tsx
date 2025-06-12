@@ -58,7 +58,7 @@ export default function HomeScreen() {
         const newTable = {
           nombre: name,
           numero: number,
-          mozoId: 1,
+          mozoId: localStorage.getItem("userId") || "0",
           estado: EstadoMesa.DISPONIBLE,
           qr: `https://miapp.com/mesa${number}`,
         };
