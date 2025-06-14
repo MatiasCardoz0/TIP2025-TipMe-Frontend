@@ -7,7 +7,11 @@ const { width, height } = Dimensions.get("window");
 
 export default function Navbar() {
   const router = useRouter();
-
+  const logout = () => {  
+    localStorage.removeItem("my-jwt");
+    router.push("/login");
+  }
+  
   return (
     <View style={styles.navbar}>
       <View style={styles.leftIcons}>
@@ -29,7 +33,7 @@ export default function Navbar() {
         </View>
       </View>
       <View style={styles.rightIcon}>
-        <Icon name="logout" size={30} color="#fff" onPress={() => router.push("/")} />
+        <Icon name="logout" size={30} color="#fff" onPress={logout} />
         <Text style={styles.label}>Salir</Text>
       </View>
     </View>

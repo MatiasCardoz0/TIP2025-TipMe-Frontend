@@ -11,13 +11,13 @@ import QRCode  from "react-native-qrcode-svg";
 export default function HomeScreen() {
 
   const { tables, fetchTables, addTable, loading, error } = useTables();
-  const [notification, setNotification] = useState<string | null>(null);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [selectedTableQR, setSelectedTableQR] = useState<Table | null>(null);
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
+  const [errorMsg, setErrMsg] = useState("");
   
     useEffect(() => {
       fetchTables(); // Cargar las mesas al montar el componente
@@ -47,9 +47,12 @@ export default function HomeScreen() {
             return styles.statusWaitingBill;
             default:
             return {};
-        };
-  
-    }; 
+       };
+    };
+
+    const isInteger = (value: string) => {
+  return /^\d+$/.test(value);
+};
 
     const newTable = async () => {
         const newTable = {
@@ -64,8 +67,6 @@ export default function HomeScreen() {
         setName("");
         setNumber("");
       };
-
-
 
 
   return (
@@ -97,13 +98,15 @@ export default function HomeScreen() {
             keyboardType="numeric"
             style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
           />
-          <View style={styles.statusContainer}>
-            <View style={styles.menuConfirmacion}>
-              <Button title="Confirmar" onPress={() => {newTable(); setAddModalVisible(false)}} />
-            </View>
-            <View style={styles.menuConfirmacion}>
-              <Button title="Cerrar" onPress={() => setAddModalVisible(false)} />
-            </View>
+           {!isInteger(number) && number.length > 0 && (
+        <Text style={{ color: "red", marginBottom: 8, fontSize:12.5 }}>Ingrese un número entero para identificar la mesa</Text>)}
+
+          <View style={{ margin: 2 }}>
+            <Button title="Confirmar" onPress={() => {newTable(); setAddModalVisible(false)}} disabled={!name.trim() || !number.trim()|| !isInteger(number)} />
+          </View>
+          <View style={{ margin: 2 }}>
+            <Button title="Cerrar" onPress={() => setAddModalVisible(false)} />
+
           </View>
         </View>
       </View>
@@ -169,7 +172,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
-
   },
   tableInfo: {
     marginBottom: 12,
@@ -222,7 +224,6 @@ const styles = StyleSheet.create({
     color: '#333',
     alignSelf: "center",
   },
-
   modalContainer: {
     flex: 1,
     justifyContent: "center",
