@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/TIP2025-TipMe-Frontend/v17/TestStore/0
+/.vs/TIP2025-TipMe-Frontend/FileContentIndex
+/.vs/slnx.sqlite

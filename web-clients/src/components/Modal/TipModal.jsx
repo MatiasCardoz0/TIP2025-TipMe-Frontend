@@ -11,10 +11,11 @@ function TipModal({openModal}) {
 
     const [amount, setAmount] = useState("");
     const [success, setSuccess] = useState(false);
+    const [errorMsg, setErrorMsg] = useState("");
     const [preferenceId, setPreferenceId] = useState(null);
 
     // Inicializa Mercado Pago con tu public key
-    initMercadoPago('PUBLIC KEY A LLENAR', {
+    initMercadoPago('APP_USR-9cf7f19b-b2b7-4220-944a-da93fd1e151c', {
         locale: "es-AR"
     });
 
@@ -52,7 +53,7 @@ function TipModal({openModal}) {
         });
     
         if (response.status === 200) {
-            setSuccess(true);
+            //setSuccess(true);
           console.log("Gracias por su colaboración! :)");
         }
         else {
