@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {config} from "../config";
+import {config} from "../../app/config";
 
 export const useTips = () => {
   const [tips, setTips] = useState<any[]>([]);

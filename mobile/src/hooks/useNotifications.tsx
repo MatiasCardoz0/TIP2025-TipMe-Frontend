@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Constants from "expo-constants";
 import * as Notifications from "expo-notifications";
 import axios from "axios";
-import { config } from "../config";
+import { config } from "../../app/config";
 
 export const useNotifications = (userId: number) => {
   const [notification, setNotification] = useState<string | null>(null);
