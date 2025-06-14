@@ -162,8 +162,9 @@ const styles = StyleSheet.create({
       color: '#333',
     },
     dropDown:{
-      width: "90%",
-      height: "15%",
+      flexDirection: "row"
+      // width: "90%",
+      // height: "15%",
     },
     grid:{
       
