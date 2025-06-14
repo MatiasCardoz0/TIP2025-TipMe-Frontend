@@ -22,7 +22,7 @@ function TipModal({openModal}) {
     const createPreference = async () => {
         try
         {
-            const response = await axios.get("http://192.168.0.102:5065/api/mp/preferenceId/"+amount);
+            const response = await axios.get("http://localhost:5065/api/mp/preferenceId/"+amount);
             const id = response.data.data.preferenceId;
             return id;
         }
@@ -45,7 +45,7 @@ function TipModal({openModal}) {
         }
         try {
             handleBuy();
-            const response = await axios.post("http://192.168.0.102:5065/api/propina/grabar", {
+            const response = await axios.post("http://localhost:5065/api/propina/grabar", {
                 "monto": amount,
                 "fecha": new Date().toISOString(),
                 "idMesa": 10,
