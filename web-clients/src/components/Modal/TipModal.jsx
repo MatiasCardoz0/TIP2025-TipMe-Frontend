@@ -14,14 +14,14 @@ function TipModal({openModal}) {
     const [preferenceId, setPreferenceId] = useState(null);
 
     // Inicializa Mercado Pago con tu public key
-    initMercadoPago('PUBLIC KEY A LLENAR', {
+    initMercadoPago('APP_USR-9cf7f19b-b2b7-4220-944a-da93fd1e151c', {
         locale: "es-AR"
     });
 
     const createPreference = async () => {
         try
         {
-            const response = await axios.get("http://localhost:5065/api/mp/preferenceId/"+amount);
+            const response = await axios.get("http://192.168.0.102:5065/api/mp/preferenceId/"+amount);
             const id = response.data.data.preferenceId;
             return id;
         }
@@ -44,7 +44,7 @@ function TipModal({openModal}) {
         }
         try {
             handleBuy();
-            const response = await axios.post("http://localhost:5065/api/propina/grabar", {
+            const response = await axios.post("http://192.168.0.102:5065/api/propina/grabar", {
                 "monto": amount,
                 "fecha": new Date().toISOString(),
                 "idMesa": 10,
@@ -52,7 +52,7 @@ function TipModal({openModal}) {
         });
     
         if (response.status === 200) {
-            setSuccess(true);
+            //setSuccess(true);
           console.log("Gracias por su colaboración! :)");
         }
         else {
