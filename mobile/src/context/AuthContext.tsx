@@ -2,6 +2,8 @@ import {createContext, useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
+import { config } from "../../config";
+import { useStorage } from "../hooks/useStorage";
 
 interface AuthProps {
     authState ? : { token: string | null; authenticated: boolean | null };
@@ -12,8 +14,9 @@ interface AuthProps {
 }
 
 const TOKEN_KEY = 'my-jwt';
-const API_URL = 'http://localhost:5065/api/auth';
+const API_URL = config.API_URL+'/api/auth';
 const AuthContext = createContext<AuthProps>({});
+const {saveDataLocal} = useStorage();
 
   export const useAuth = () => {
    const context = useContext(AuthContext);
@@ -68,19 +71,21 @@ const AuthContext = createContext<AuthProps>({});
 
     const login = async (email: string, password: string) => {
         try {
+          console.log("loginnn: " + `${API_URL}/login`, { email, password })
             const response = await axios.post(`${API_URL}/login`, { email, password });
             const { token } = response.data;
             setAuthState({ token, authenticated: true });
 
             //adjuntar header a todas las request futuras para mostrar que el usuario está autenticado
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+              saveDataLocal(TOKEN_KEY, token)
+                // if (Platform.OS === "web") {// en la web usamos localStorage
+                //   localStorage.setItem(TOKEN_KEY, token);
+                // } else { 
+                //   //en mobile guardar el token en el secure storage de expo
+                //   await SecureStore.setItemAsync(TOKEN_KEY, token);
+                // }
 
-                if (Platform.OS === "web") {// en la web usamos localStorage
-                  localStorage.setItem(TOKEN_KEY, token);
-                } else { 
-                  //en mobile guardar el token en el secure storage de expo
-                  await SecureStore.setItemAsync(TOKEN_KEY, token);
-                }
             return response.data;
         
         } catch (error: any) {

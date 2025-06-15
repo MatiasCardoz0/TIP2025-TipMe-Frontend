@@ -116,9 +116,9 @@ const styles = StyleSheet.create({
       paddingHorizontal: 10,
     },
     content: {
-        paddingTop: "10%",
+        //paddingTop: "10%",
         width: "100%",
-        justifyContent: "flex-end",
+        //justifyContent: "space-between",
         backgroundColor: "#ffffff", // Fondo claro
       },
       filterContainer: {
@@ -162,9 +162,9 @@ const styles = StyleSheet.create({
       color: '#333',
     },
     dropDown:{
-      flexDirection: "row"
-      // width: "90%",
-      // height: "15%",
+      flexDirection: "column",
+      //  width: "90%",
+      //  height: "15%",
     },
     grid:{
       

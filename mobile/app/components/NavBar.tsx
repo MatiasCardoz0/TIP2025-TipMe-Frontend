@@ -1,14 +1,20 @@
 import React from "react";
-import { View, StyleSheet, Text, Dimensions } from "react-native";
+import { View, StyleSheet, Text, Dimensions, Platform } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = Dimensions.get("window");
 
 export default function Navbar() {
   const router = useRouter();
   const logout = () => {  
-    localStorage.removeItem("my-jwt");
+     if (Platform.OS === "web") {
+            localStorage.removeItem("my-jwt");
+        } else {
+            AsyncStorage.removeItem("my-jwt");
+        }
+    
     router.push("/login");
   }
   

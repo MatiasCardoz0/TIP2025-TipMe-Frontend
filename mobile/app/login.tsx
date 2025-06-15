@@ -1,15 +1,18 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, Platform } from "react-native";
 //import TransparentLogo from "../../assets/images/TipMe_Logo_transparent.png";
 import { useAuth } from "../src/context/AuthContext";
 import { useRouter } from "expo-router";
+import {useStorage} from "../src/hooks/useStorage"
+
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { onLogin, onRegister } = useAuth();
   const router = useRouter();
-    const [errorMsg, setErrmsg] = useState("");
+  const [errorMsg, setErrmsg] = useState("");
+  const {saveDataLocal} = useStorage();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -26,7 +29,8 @@ export default function LoginScreen() {
     console.log("Error en Login ", response);
   }
   else {
-    localStorage.setItem("userId", response.id);
+    saveDataLocal("userId", response.id);
+    //localStorage.setItem("userId", response.id);
     router.replace("/home");
   }
 };

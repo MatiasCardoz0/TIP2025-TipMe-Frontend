@@ -53,6 +53,8 @@ export default function MapaMesas() {
   return /^\d+$/.test(value);
 };
 
+
+
    const newTable = async () => {
         const newTable = {
           nombre: name,

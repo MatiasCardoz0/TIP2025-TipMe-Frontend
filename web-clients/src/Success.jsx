@@ -1,23 +1,33 @@
 import './App.css'
 import './components/Modal/TipModal.jsx'
 import logo from '../../shared/TipMe_Logo_transparent.png'
+import { config } from "../../config.js";
+import { useEffect } from "react";
 
-function App() {
+function Success() {
     const navigate = useNavigate();
+  //   const [searchParams] = useSearchParams();
+  //   const mesaId = searchParams.get("id");
 
-    const saveTip = async () => {           
-        try {
-            const response = await axios.post("http://localhost:5065/api/propina/grabar", {
-                "monto": amount,
-                "fecha": new Date().toISOString(),
-                "idMesa": 10,
-                //"idMozo": 1 
-        });
-        }
-        catch (error){
-          console.log("Error en el servidor." + error);
-          }
-      }
+  //   useEffect(() => {
+  //   if (mesaId) {
+  //     //saveTip(mesaId);
+  //   }
+  // }, [mesaId]);
+
+  //   const saveTip = async (mesaId) => {           
+  //       try {
+  //           const response = await axios.post(config.API_URL+"/api/propina/grabar", {
+  //               "monto": amount,
+  //               "fecha": new Date().toISOString(),
+  //               "idMesa": mesaId,
+  //               //"idMozo": 1 
+  //       });
+  //       }
+  //       catch (error){
+  //         console.log("Error en el servidor." + error);
+  //         }
+  //     }
 
   return (
     <div>
@@ -40,4 +50,4 @@ function App() {
   
 }
 
-export default App;
+export default Success;
