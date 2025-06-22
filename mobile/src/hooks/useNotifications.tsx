@@ -21,7 +21,6 @@ export const useNotifications = (userId: number) => {
   const showBrowserNotification = (message: string) => {
     new Notification("TipMe", {
       body: message,
-      icon: "/images/TipMe_Logo_transparent.png",
     });
   };
 
@@ -29,17 +28,18 @@ export const useNotifications = (userId: number) => {
   // Configuración de notificaciones
   const registerForNotifications = async () => {
         if (Constants.isDevice) {
+        getDeviceNotificationsPermission();
         try {
             const { data: expoToken } = await Notifications.getExpoPushTokenAsync();
             console.log("Push token:", expoToken);
 
             await axios.post(`${config.API_URL}/api/waiter/register-push-token`, {
             ExpoToken: expoToken,
-            IdMozo: userId,
+            IdMozo: userId, 
             });
         } catch (error) {
             console.error("Error al registrar el push token:", error);
-        }
+          }
         } else if ("Notification" in window) {// manejo del caso en que se está ejecutando en un browser
         if (Notification.permission === "default") {
             const permission = await Notification.requestPermission();
@@ -58,15 +58,39 @@ export const useNotifications = (userId: number) => {
         }
   };
 
+  const getDeviceNotificationsPermission = async () => {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync(); 
+      let finalStatus = existingStatus;
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status !== "granted") {
+          console.warn("Permiso de notificaciones denegado");
+          return;
+        }
+        finalStatus = status;
+      } else {
+        console.log("Permiso de notificaciones ya concedido");
+      }
+  }
+
   const connectToWebSocket = () => {
     userId = localStorage.getItem("userId") ? parseInt(localStorage.getItem("userId") || "0") : 0;
     const socket = new WebSocket(
       `${config.API_URL}/api/connect?userId=${userId}&esMozo=${true}`
     );
 
-    socket.onmessage = (event) => {
+    socket.onmessage = (event) => {debugger
       console.log("Mensaje recibido:", event.data);
-      setNotification(event.data);
+        const msg = event.data;
+      if (isJson(msg)) {//es una nota del llamado de mozo
+        const data = JSON.parse(msg);
+        if (data.nota && data.mesa) {
+          console.log(`Nota: "${data.nota}" (Mesa: ${data.mesa})`);
+          return;
+        }
+      } else {//mensaje de notificacion
+        setNotification(msg);
+      }
     };
 
     socket.onerror = (error) => {
@@ -77,5 +101,14 @@ export const useNotifications = (userId: number) => {
       socket.close();
     };
   };
+
+  function isJson(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
 
 };
