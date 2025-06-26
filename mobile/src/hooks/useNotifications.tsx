@@ -79,18 +79,10 @@ export const useNotifications = (userId: number) => {
       `${config.API_URL}/api/connect?userId=${userId}&esMozo=${true}`
     );
 
-    socket.onmessage = (event) => {debugger
+    socket.onmessage = (event) => {
       console.log("Mensaje recibido:", event.data);
-        const msg = event.data;
-      if (isJson(msg)) {//es una nota del llamado de mozo
-        const data = JSON.parse(msg);
-        if (data.nota && data.mesa) {
-          console.log(`Nota: "${data.nota}" (Mesa: ${data.mesa})`);
-          return;
-        }
-      } else {//mensaje de notificacion
-        setNotification(msg);
-      }
+      const msg = event.data;
+      setNotification(msg);
     };
 
     socket.onerror = (error) => {
@@ -101,14 +93,5 @@ export const useNotifications = (userId: number) => {
       socket.close();
     };
   };
-
-  function isJson(str) {
-    try {
-        JSON.parse(str);
-    } catch (e) {
-        return false;
-    }
-    return true;
-}
 
 };

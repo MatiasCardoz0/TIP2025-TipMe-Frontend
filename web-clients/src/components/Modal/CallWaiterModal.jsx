@@ -21,6 +21,7 @@ export default function CallWaiterModal({ openModal, onConfirm }) {// recibe las
               value={note}
               onChange={e => setNote(e.target.value)}
               placeholder="Ej: Cambiar la gaseosa por agua"
+              maxLength={100}
             />
           </label>
           <button className="modal-button" onClick={handleConfirm}>
