@@ -20,6 +20,7 @@ export default function MapaMesas() {
   const { width, height } = useWindowDimensions();
   const [menuVisible, setMenuVisible] = useState(false);
   const [menuEstadoVisible, setMenuEstadoVisible] = useState(false);
+  const [menuNotasVisible, setMenuNotasVisible] = useState(false);
   const [menuPos, setMenuPos] = useState({ x: 0, y: 0 });
   const [modoMover, setModoMover] = useState(false);
   const [mesaSeleccionada, setMesaSeleccionada] = useState(0);
@@ -91,6 +92,11 @@ export default function MapaMesas() {
     setMenuVisible(false);
     setMenuEstadoVisible(true);
   };
+
+  const iniciarMenuNotas = () => {
+    setMenuVisible(false);
+    setMenuNotasVisible(true);
+  }
 
   const iniciarMovimiento = () => {
     if (mesaSeleccionada !== null) {
@@ -287,6 +293,13 @@ export default function MapaMesas() {
               <Icon name="sync" size={30} />
               <Text style={styles.menuIconContainer}>Estado</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuIconContainer}
+              onPress={() => iniciarMenuNotas()}
+            >
+              <Icon name="sticky-note-2" size={30} />
+              <Text style={styles.menuIconContainer}>Notas</Text>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.menuIconContainer}>
               <Icon
                 name="qr-code"
@@ -376,6 +389,51 @@ export default function MapaMesas() {
               <TouchableOpacity
                 style={styles.menuIconContainer}
                 onPress={() => setMenuEstadoVisible(false)}
+              >
+                <Icon name="cancel" size={30} color="red" />
+                <Text style={styles.menuIconContainer}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+        {/* Menu notas */}
+        {
+          menuNotasVisible && (
+          <View
+            style={[styles.menuEstado, { left: menuPos.x, top: menuPos.y }]}
+          >
+            {["DISPONIBLE", "OCUPADA", "RESERVADA"].map((estado) => (
+              <TouchableOpacity
+                key={estado}
+                onPress={() => setNuevoEstado(estado)}
+                style={[
+                  styles.estadoBoton,
+                  {
+                    backgroundColor:
+                      estado === "DISPONIBLE"
+                        ? "#4caf50"
+                        : estado === "OCUPADA"
+                        ? "#f44336"
+                        : estado === "RESERVADA"
+                        ? "#ff9800"
+                        : "#a231ee",
+                  },
+                ]}
+              >
+                <Text style={styles.estadoTexto}>{estado}</Text>
+              </TouchableOpacity>
+            ))}
+            <View style={styles.menuEstadoConfirmacion}>
+              <TouchableOpacity
+                style={styles.menuIconContainer}
+                onPress={() => aplicarEstado()}
+              >
+                <Icon name="check-circle" size={30} color="green" />
+                <Text style={styles.menuIconContainer}>Aceptar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.menuIconContainer}
+                onPress={() => setMenuNotasVisible(false)}
               >
                 <Icon name="cancel" size={30} color="red" />
                 <Text style={styles.menuIconContainer}>Cancelar</Text>
