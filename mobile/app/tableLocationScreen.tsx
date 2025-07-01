@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Button, TextInput } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Button,
+  TextInput,
+  Pressable,
+} from "react-native";
 import Svg, { Rect } from "react-native-svg";
 import {
   GestureHandlerRootView,
@@ -15,6 +23,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import Navbar from "./components/NavBar";
 import { useTables } from "../src/hooks/useTables";
 import { Int32 } from "react-native/Libraries/Types/CodegenTypes";
+import { useNotes } from "../src/hooks/useNotes";
 
 export default function MapaMesas() {
   const { width, height } = useWindowDimensions();
@@ -31,10 +40,23 @@ export default function MapaMesas() {
   const [modalQRVisible, setModalQRVisible] = useState(false);
   const [selectedTableQR, setSelectedTableQR] = useState<Table | null>(null);
   const [nuevoEstado, setNuevoEstado] = useState("");
-  const { tables, setTables, addTable ,fetchTables, updateTable, deleteTable, error } = useTables();
+  const {
+    tables,
+    setTables,
+    addTable,
+    fetchTables,
+    updateTable,
+    deleteTable,
+    error,
+  } = useTables();
+  const { notes, setNotes, fetchNotes, addNote, deleteNote } = useNotes();
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
+  const [notaSeleccionada, setNotaSeleccionada] = useState<Note | null>(null);
+  const [notaPresionada, setNotaPresionada] = useState<number | null>(null);
+  const [modalConfirmacionBorrado, setModalConfirmacionBorrado] =
+    useState(false);
 
   useEffect(() => {
     fetchTables();
@@ -50,25 +72,30 @@ export default function MapaMesas() {
     y: Int32;
   };
 
-      const isInteger = (value: string) => {
-  return /^\d+$/.test(value);
-};
+  type Note = {
+    mozoId: Int32;
+    mesaId: Int32;
+    renglon: Int32;
+    mensaje: String;
+  };
 
+  const isInteger = (value: string) => {
+    return /^\d+$/.test(value);
+  };
 
-
-   const newTable = async () => {
-        const newTable = {
-          nombre: name,
-          numero: number,
-          mozoId: localStorage.getItem("userId") || "0",
-          estado: 1,
-          qr: `https://miapp.com/mesa${number}`,
-        };
-        await addTable(newTable);
-        fetchTables();
-        setName("");
-        setNumber("");
-      };
+  const newTable = async () => {
+    const newTable = {
+      nombre: name,
+      numero: number,
+      mozoId: localStorage.getItem("userId") || "0",
+      estado: 1,
+      qr: `https://miapp.com/mesa${number}`,
+    };
+    await addTable(newTable);
+    fetchTables();
+    setName("");
+    setNumber("");
+  };
 
   const handleLongPress = (index: number) => {
     setMenuVisible(true);
@@ -95,8 +122,10 @@ export default function MapaMesas() {
 
   const iniciarMenuNotas = () => {
     setMenuVisible(false);
+    const mesaID = parseInt(tables[mesaSeleccionada].id);
+    fetchNotes(mesaID);
     setMenuNotasVisible(true);
-  }
+  };
 
   const iniciarMovimiento = () => {
     if (mesaSeleccionada !== null) {
@@ -106,11 +135,8 @@ export default function MapaMesas() {
         posicionX: tables[mesaSeleccionada].posicionX,
         posicionY: tables[mesaSeleccionada].posicionY,
       });
-      
     }
   };
-
-
 
   const handleDrag = (
     index: number,
@@ -128,8 +154,14 @@ export default function MapaMesas() {
               ...mesa,
               //posicionX: absoluteX - width * 0.04,
               //posicionY: absoluteY - height / 3.5,
-              posicionX: Math.max(10, Math.min(absoluteX - width * 0.04, width - 80)),
-              posicionY: Math.max(10, Math.min(absoluteY - height / 3.5, height - 270)),
+              posicionX: Math.max(
+                10,
+                Math.min(absoluteX - width * 0.04, width - 80)
+              ),
+              posicionY: Math.max(
+                10,
+                Math.min(absoluteY - height / 3.5, height - 270)
+              ),
             }
           : mesa
       )
@@ -160,14 +192,14 @@ export default function MapaMesas() {
   };
 
   const aplicarEstado = () => {
-    console.log("estado cambiando " + nuevoEstado)
-    console.log("tables antes: " + tables[mesaSeleccionada].nombreEstado)
+    console.log("estado cambiando " + nuevoEstado);
+    console.log("tables antes: " + tables[mesaSeleccionada].nombreEstado);
     setTables(
       tables.map((mesa, i) =>
         i === mesaSeleccionada ? { ...mesa, nombreEstado: nuevoEstado } : mesa
       )
     );
-    
+
     let estadoNuevo = tables[mesaSeleccionada];
     estadoNuevo.nombreEstado = nuevoEstado;
     updateTable(tables[mesaSeleccionada].id, estadoNuevo);
@@ -178,38 +210,69 @@ export default function MapaMesas() {
     <View style={styles.container}>
       <Text style={styles.title}>Mapa de Mesas</Text>
       <Modal visible={addModalVisible} transparent animationType="slide">
-            <View style={styles.smallModalContainer}>
-              <View style={styles.AddTableModalContent}>
-              <Text style={styles.newTableName}>Nueva Mesa</Text>
-                <TextInput
-                  placeholder="Nombre de la mesa"
-                  value={name}
-                  onChangeText={(text) => setName(text)}
-                  style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+        <View style={styles.smallModalContainer}>
+          <View style={styles.AddTableModalContent}>
+            <Text style={styles.newTableName}>Nueva Mesa</Text>
+            <TextInput
+              placeholder="Nombre de la mesa"
+              value={name}
+              onChangeText={(text) => setName(text)}
+              style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+            />
+            <TextInput
+              placeholder="Numero de mesa"
+              value={number}
+              onChangeText={(text) => setNumber(text)}
+              keyboardType="numeric"
+              style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+            />
+            {!isInteger(number) && number.length > 0 && (
+              <Text
+                style={{
+                  color: "red",
+                  marginBottom: 8,
+                  fontSize: 12,
+                  padding: 0,
+                  marginLeft: -40,
+                  marginRight: -40,
+                }}
+              >
+                Ingrese un número entero para identificar la mesa
+              </Text>
+            )}
+            <View style={styles.statusContainer}>
+              <View style={styles.menuConfirmacion}>
+                <Button
+                  title="Confirmar"
+                  onPress={() => {
+                    newTable();
+                    setAddModalVisible(false);
+                    fetchTables();
+                  }}
+                  disabled={
+                    !name.trim() || !number.trim() || !isInteger(number)
+                  }
                 />
-                <TextInput
-                  placeholder="Numero de mesa"
-                  value={number}
-                  onChangeText={(text) => setNumber(text)}
-                  keyboardType="numeric"
-                  style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+              </View>
+              <View style={styles.menuConfirmacion}>
+                <Button
+                  title="Cerrar"
+                  onPress={() => setAddModalVisible(false)}
                 />
-                {!isInteger(number) && number.length > 0 && (
-        <Text style={{ color: "red", marginBottom: 8, fontSize:12,padding:0, marginLeft:-40, marginRight:-40 }}>Ingrese un número entero para identificar la mesa</Text>)}
-                <View style={styles.statusContainer}>
-                  <View style={styles.menuConfirmacion}>
-                    <Button title="Confirmar" onPress={() => {newTable(); setAddModalVisible(false); fetchTables();}} disabled={!name.trim() || !number.trim()|| !isInteger(number)} />
-                  </View>
-                  <View style={styles.menuConfirmacion}>
-                    <Button title="Cerrar" onPress={() => setAddModalVisible(false)} />
-                  </View>
-                </View>
               </View>
             </View>
-          </Modal>
-          <View style={styles.agregarBoton}>
-            <TouchableOpacity style={styles.addTableButton} onPress={() => setAddModalVisible(true)} ><Text style={{color: "#339CFF"}}>╋ Agregar Mesa</Text></TouchableOpacity>
           </View>
+        </View>
+      </Modal>
+      <View style={styles.agregarBoton}>
+        <TouchableOpacity
+          style={styles.addTableButton}
+          onPress={() => setAddModalVisible(true)}
+        >
+          {" "}
+          <Text style={{ color: "#339CFF" }}>╋ Agregar Mesa</Text>
+        </TouchableOpacity>
+      </View>
       <GestureHandlerRootView style={styles.gestureContainer}>
         <Svg width={width * 0.9} height={height * 0.75}>
           <Rect width="100%" height="100%" fill="#ddd" />
@@ -396,51 +459,111 @@ export default function MapaMesas() {
             </View>
           </View>
         )}
-        {/* Menu notas */}
-        {
-          menuNotasVisible && (
-          <View
-            style={[styles.menuEstado, { left: menuPos.x, top: menuPos.y }]}
-          >
-            {["DISPONIBLE", "OCUPADA", "RESERVADA"].map((estado) => (
-              <TouchableOpacity
-                key={estado}
-                onPress={() => setNuevoEstado(estado)}
-                style={[
-                  styles.estadoBoton,
-                  {
-                    backgroundColor:
-                      estado === "DISPONIBLE"
-                        ? "#4caf50"
-                        : estado === "OCUPADA"
-                        ? "#f44336"
-                        : estado === "RESERVADA"
-                        ? "#ff9800"
-                        : "#a231ee",
-                  },
-                ]}
-              >
-                <Text style={styles.estadoTexto}>{estado}</Text>
-              </TouchableOpacity>
-            ))}
-            <View style={styles.menuEstadoConfirmacion}>
-              <TouchableOpacity
-                style={styles.menuIconContainer}
-                onPress={() => aplicarEstado()}
-              >
-                <Icon name="check-circle" size={30} color="green" />
-                <Text style={styles.menuIconContainer}>Aceptar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.menuIconContainer}
-                onPress={() => setMenuNotasVisible(false)}
-              >
-                <Icon name="cancel" size={30} color="red" />
-                <Text style={styles.menuIconContainer}>Cancelar</Text>
-              </TouchableOpacity>
+        {/* Menu Notas*/}
+        <Modal visible={menuNotasVisible} transparent animationType="slide">
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <View style={styles.notaBotonera}>
+                <TouchableOpacity
+                  onPress={() => {
+                    /* lógica para crear nota */
+                  }}
+                >
+                  <View style={{ alignItems: "center" }}>
+                    <Icon name="add-circle" size={30} color="green" />
+                    <Text>Agregar Nota</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setModalConfirmacionBorrado(true);
+                  }}
+                >
+                  <View style={{ alignItems: "center" }}>
+                    <Icon name="delete" size={30} color="#f44336" />
+                    <Text>Borrar</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <View>
+                <Text style={styles.tableName}>Notas de la mesa</Text>
+                {notes.length > 0 ? (
+                  notes.map((nota) => (
+                    <Pressable
+                      key={nota.renglon}
+                      onPress={() => {
+                        const notaSel = setNotaSeleccionada(
+                          nota.renglon === notaSeleccionada
+                            ? null
+                            : nota.renglon
+                        );
+                      }}
+                      style={[
+                        styles.notaRecuadro,
+                        notaSeleccionada === nota.renglon &&
+                          styles.notaRecuadroSeleccionada,
+                      ]}
+                    >
+                      <Text style={styles.notaTexto}> {nota.mensaje}
+                      </Text>
+                    </Pressable>
+                  ))
+                ) : (
+                  <View style={{ marginVertical: 10 }}>
+                    <Text style={styles.notaTexto}>
+                      No hay notas para esta mesa.
+                    </Text>
+                  </View>
+                )}
+              </View>
+              <View style={styles.modalButton}>
+                <Button
+                  title="Cerrar"
+                  onPress={() => setMenuNotasVisible(false)}
+                />
+              </View>
             </View>
           </View>
-        )}
+        </Modal>
+        {/* Modal para confirmacion de borrado */}
+        <Modal
+          visible={modalConfirmacionBorrado}
+          transparent
+          animationType="slide"
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContentConfirmacion}>
+              <Text style={{ margin: 10 }}>
+                ¿Realmente deséa borrar la nota?
+              </Text>
+              <View style={styles.menuEstadoConfirmacion}>
+                <TouchableOpacity
+                  style={styles.menuIconContainer}
+                  onPress={() =>
+                    deleteNote(
+                      notaSeleccionada?.mesaId == null
+                        ? 1
+                        : notaSeleccionada?.mesaId,
+                      notaSeleccionada?.renglon == null
+                        ? 1
+                        : notaSeleccionada?.renglon
+                    )
+                  }
+                >
+                  <Icon name="check-circle" size={30} color="green" />
+                  <Text style={styles.menuIconContainer}>Aceptar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.menuIconContainer}
+                  onPress={() => setModalConfirmacionBorrado(false)}
+                >
+                  <Icon name="cancel" size={30} color="red" />
+                  <Text style={styles.menuIconContainer}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </GestureHandlerRootView>
     </View>
   );
@@ -459,7 +582,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#f0f0f0",
-    height: "100%", overflow: "hidden"
+    height: "100%",
+    overflow: "hidden",
   },
   mesa: {
     position: "absolute",
@@ -504,6 +628,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
   },
+   modalContentConfirmacion: {
+    backgroundColor: "white",
+    padding: 10,
+    borderRadius: 10,
+    alignItems: "center",
+  },
   modalButton: {
     paddingTop: 30,
     borderRadius: 10,
@@ -513,12 +643,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#ffffff",
+    margin: 20,
   },
   newTableName: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    padding: 10
+    fontWeight: "bold",
+    color: "#333",
+    padding: 10,
   },
   menuIconContainer: {
     alignItems: "center",
@@ -568,7 +699,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 10,
     borderRadius: 5,
-    marginLeft: 10
+    marginLeft: 10,
   },
   smallModalContainer: {
     flex: 1,
@@ -588,15 +719,40 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     margin: 3,
-    
   },
   statusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
-  agregarBoton : {
-    flexDirection : "row",
-    width: "100%"
-  }
+  agregarBoton: {
+    flexDirection: "row",
+    width: "100%",
+  },
+  notaRecuadro: {
+    backgroundColor: "white",
+    padding: 10,
+    marginVertical: 5,
+    borderRadius: 8,
+    alignItems: "center",
+    width: 200,
+  },
+  notaTexto: {
+    color: "black",
+    padding: 5,
+    margin: 5,
+  },
+  notaBotonera: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    width: "100%",
+    paddingHorizontal: 20,
+  },
+  notaRecuadroPresionada: {
+    backgroundColor: "rgb(220, 169, 43)",
+  },
+  notaRecuadroSeleccionada: {
+    backgroundColor: "rgb(220, 169, 43)",
+  },
 });

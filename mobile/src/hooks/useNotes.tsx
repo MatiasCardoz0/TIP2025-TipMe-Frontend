@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { config } from "../../config"
 
-export const useTables = () => {
+export const useNotes = () => {
   const [notes, setNotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // GET Notas (Obtener notas)
-  const fetchNotes = async () => {
+  const fetchNotes = async (mesaId : number) => {
     setLoading(true);
     try {
-      const response = await fetch(config.API_URL+"/api/nota/10");
+      const response = await fetch(config.API_URL+"/api/nota?idMesa="+ mesaId);
       const json = await response.json();
       setNotes(json.data);
       setError(null);
@@ -77,7 +77,9 @@ export const useTables = () => {
          "mesaId": idMesa,
          "renglon": idNota
         }
-      const response = await fetch(config.API_URL+"/api/nota/borrarUnaNota/", {
+      const pp = JSON.stringify(notaABorrar);
+      console.log(pp)
+      const response = await fetch(config.API_URL+"/api/nota/borrarUnaNota", {
         method: "DELETE", 
         headers: {
           "Content-Type": "application/json",
