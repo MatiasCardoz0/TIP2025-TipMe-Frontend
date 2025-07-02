@@ -17,7 +17,6 @@ export default function HomeScreen() {
   const [selectedTableQR, setSelectedTableQR] = useState<Table | null>(null);
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
-  const [errorMsg, setErrMsg] = useState("");
   let sortedTables = [...tables].reverse(); // Mesas ordenadas con las mas nuevas primero
   
     useEffect(() => {
@@ -77,6 +76,9 @@ export default function HomeScreen() {
       <Text style={styles.tableName}>QR de {selectedTableQR?.nombre}</Text>
       <View style={styles.modalContent}>
         {selectedTableQR && <QRCode value={selectedTableQR.qr} size={200} />}
+        <Text style={{ color: "white", fontSize: 16, marginTop: 10, marginBottom: 10 }}>
+          {selectedTableQR?.qr}
+        </Text>
         <Button title="Cerrar" onPress={() => {setModalVisible(false)
         }} />
       </View>
@@ -178,10 +180,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   tableName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    padding: 10
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#ffffff",
+    margin: 20,
   },
   seats: {
     fontSize: 14,

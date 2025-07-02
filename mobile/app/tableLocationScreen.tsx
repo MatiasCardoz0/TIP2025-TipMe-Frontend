@@ -286,6 +286,9 @@ export default function MapaMesas() {
               {selectedTableQR && (
                 <QRCode value={selectedTableQR.qr} size={200} />
               )}
+                <Text style={{ color: "white", fontSize: 16, marginTop: 10 }}>
+                  {selectedTableQR?.qr}
+                </Text>
               <View style={styles.modalButton}>
                 <Button
                   title="Cerrar"
@@ -635,7 +638,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalButton: {
-    paddingTop: 30,
+    paddingTop: 10,
     borderRadius: 10,
     alignItems: "center",
   },
