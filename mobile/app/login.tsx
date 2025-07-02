@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, Platform } from "react-native";
-//import TransparentLogo from "../../assets/images/TipMe_Logo_transparent.png";
 import { useAuth } from "../src/context/AuthContext";
 import { useRouter } from "expo-router";
 import {useStorage} from "../src/hooks/useStorage"
@@ -13,6 +12,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const [errorMsg, setErrmsg] = useState("");
   const {saveDataLocal} = useStorage();
+  const TransparentLogo = require("../assets/images/TipMe_Logo_transparent.png");
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -43,10 +43,10 @@ const handleRegister = async () => {
     onRegister?.(email, password);
   }
 }; 
-//<Image source={TransparentLogo} style={{ width: 100, height: 100 }} />
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Image source={TransparentLogo} style={{ width: 100, height: 100, margin:50 }} />
+      <Text style={styles.title}>Bienvenido a TipMe!</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"

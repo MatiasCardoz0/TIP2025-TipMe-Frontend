@@ -18,6 +18,7 @@ export default function HomeScreen() {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
   const [errorMsg, setErrMsg] = useState("");
+  let sortedTables = [...tables].reverse(); // Mesas ordenadas con las mas nuevas primero
   
     useEffect(() => {
       fetchTables(); // Cargar las mesas al montar el componente
@@ -114,7 +115,7 @@ export default function HomeScreen() {
       <Text style= {styles.listItemsTitle}>Mis Mesas</Text>
       <TouchableOpacity style={styles.addTableButton} onPress={() => setAddModalVisible(true)} ><Text style={{color: "#339CFF"}}>╋ Agregar Mesa</Text></TouchableOpacity>
       <FlatList 
-        data={tables}
+        data={sortedTables}
         keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
         renderItem={({ item }) => (
 
@@ -123,7 +124,7 @@ export default function HomeScreen() {
               <View style={{ flex: 1 }}>
                 <View style={styles.tableInfo}>
                   <Text style={styles.tableName}>{item.nombre}</Text>
-                  <Text style={styles.seats}>Lugares: 3</Text>
+                  <Text style={styles.seats}>Mesa numero: {item.numero}</Text>
                 </View>
                 <View style={styles.statusContainer}>
                   <View style={[styles.statusBadge, getStatusStyle(item.estado)]}>
