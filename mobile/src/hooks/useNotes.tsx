@@ -13,6 +13,7 @@ export const useNotes = () => {
       const response = await fetch(config.API_URL+"/api/nota?idMesa="+ mesaId);
       const json = await response.json();
       setNotes(json.data);
+      console.log(json.data)
       setError(null);
     } catch (err: any) {
       setError(err.message || "Error al obtener notas");
@@ -22,20 +23,27 @@ export const useNotes = () => {
   };
 
   // POST Notas (Agregar una nueva nota)
-  const addNote = async (newTable: any) => {
+  const addNote = async (mesaId : number, message : string) => {
     try {
+      const newNote = {
+        "mesaId" : mesaId,
+        "mensaje" : message
+      }
+      console.log(newNote);
       const response = await fetch(config.API_URL+"/api/nota/grabar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newTable),
+        body: JSON.stringify(newNote),
       });
       if (!response.ok) {
-        throw new Error("Error al agregar la mesa");
+        throw new Error("Error al agregar la nota");
       }
+      console.log(response);
       const createdNote = await response.json();
-      setNotes((prevTables) => [...prevTables, createdNote]); // Agrega la nueva nota
+      setNotes((prevNotes) => [...prevNotes, createdNote]);
+      fetchNotes(mesaId);
     } catch (err: any) {
       setError(err.message || "Error al agregar nota");
     }
@@ -72,24 +80,16 @@ export const useNotes = () => {
 
   // DELETE Nota (Borra una nota)
   const deleteNote = async (idMesa: number, idNota : number) => {
-    try {
-      const notaABorrar = {
-         "mesaId": idMesa,
-         "renglon": idNota
-        }
-      const pp = JSON.stringify(notaABorrar);
-      console.log(pp)
-      const response = await fetch(config.API_URL+"/api/nota/borrarUnaNota", {
-        method: "DELETE", 
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(notaABorrar),
+    try {      
+      console.log("mesa: "+idMesa + ", renglon: " + idNota)
+      const response = await fetch(config.API_URL+"/api/nota/borrarUnaNota/"+idMesa+"/"+idNota, {
+        method: "DELETE",         
       });
       if (!response.ok) {
         throw new Error("Error al eliminar la nota");
       }
       setNotes((prevNotes) => prevNotes.filter((mesa) => mesa.id !== idMesa));
+      fetchNotes(idMesa);
     } catch (err: any) {
       setError(err.message || "Error al eliminar mesa");
     }

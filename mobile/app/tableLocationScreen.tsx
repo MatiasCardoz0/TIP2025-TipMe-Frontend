@@ -51,7 +51,9 @@ export default function MapaMesas() {
   } = useTables();
   const { notes, setNotes, fetchNotes, addNote, deleteNote } = useNotes();
   const [addModalVisible, setAddModalVisible] = useState(false);
+  const [addModalNotaVisible, setAddModalNotaVisible] = useState(false);
   const [name, setName] = useState("");
+  const [message, setMessage] = useState("");
   const [number, setNumber] = useState("");
   const [notaSeleccionada, setNotaSeleccionada] = useState<Note | null>(null);
   const [notaPresionada, setNotaPresionada] = useState<number | null>(null);
@@ -192,8 +194,6 @@ export default function MapaMesas() {
   };
 
   const aplicarEstado = () => {
-    console.log("estado cambiando " + nuevoEstado);
-    console.log("tables antes: " + tables[mesaSeleccionada].nombreEstado);
     setTables(
       tables.map((mesa, i) =>
         i === mesaSeleccionada ? { ...mesa, nombreEstado: nuevoEstado } : mesa
@@ -209,6 +209,7 @@ export default function MapaMesas() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mapa de Mesas</Text>
+      {/* Modal para agregar mesa */}
       <Modal visible={addModalVisible} transparent animationType="slide">
         <View style={styles.smallModalContainer}>
           <View style={styles.AddTableModalContent}>
@@ -264,6 +265,7 @@ export default function MapaMesas() {
           </View>
         </View>
       </Modal>
+      
       <View style={styles.agregarBoton}>
         <TouchableOpacity
           style={styles.addTableButton}
@@ -469,7 +471,7 @@ export default function MapaMesas() {
               <View style={styles.notaBotonera}>
                 <TouchableOpacity
                   onPress={() => {
-                    /* lógica para crear nota */
+                    setAddModalNotaVisible(true);
                   }}
                 >
                   <View style={{ alignItems: "center" }}>
@@ -479,13 +481,15 @@ export default function MapaMesas() {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
-                    setModalConfirmacionBorrado(true);
+                    if(notaSeleccionada){
+                      setModalConfirmacionBorrado(true);
+                    } 
                   }}
                 >
-                  <View style={{ alignItems: "center" }}>
-                    <Icon name="delete" size={30} color="#f44336" />
+                  {notes.length > 0 &&<View style={{ alignItems: "center" }}>
+                    <Icon name="delete" size={30} color="#f44336"/>
                     <Text>Borrar</Text>
-                  </View>
+                  </View>}
                 </TouchableOpacity>
               </View>
               <View>
@@ -495,16 +499,16 @@ export default function MapaMesas() {
                     <Pressable
                       key={nota.renglon}
                       onPress={() => {
-                        const notaSel = setNotaSeleccionada(
-                          nota.renglon === notaSeleccionada
-                            ? null
-                            : nota.renglon
-                        );
+                        const yaSeleccionada = notaSeleccionada?.renglon === nota.renglon && notaSeleccionada?.mesaId === nota.mesaId;
+                        const nuevaSeleccion = yaSeleccionada ? null : nota;
+                        setNotaSeleccionada(nuevaSeleccion);
                       }}
                       style={[
-                        styles.notaRecuadro,
-                        notaSeleccionada === nota.renglon &&
-                          styles.notaRecuadroSeleccionada,
+                         styles.notaRecuadro,
+                          notaSeleccionada?.mesaId === nota.mesaId &&
+                          notaSeleccionada?.renglon === nota.renglon
+                            ? styles.notaRecuadroSeleccionada
+                            : null,
                       ]}
                     >
                       <Text style={styles.notaTexto}> {nota.mensaje}
@@ -522,7 +526,9 @@ export default function MapaMesas() {
               <View style={styles.modalButton}>
                 <Button
                   title="Cerrar"
-                  onPress={() => setMenuNotasVisible(false)}
+                  onPress={() => {setMenuNotasVisible(false);
+                    setNotaSeleccionada(null);
+                  }}
                 />
               </View>
             </View>
@@ -542,15 +548,14 @@ export default function MapaMesas() {
               <View style={styles.menuEstadoConfirmacion}>
                 <TouchableOpacity
                   style={styles.menuIconContainer}
-                  onPress={() =>
-                    deleteNote(
-                      notaSeleccionada?.mesaId == null
-                        ? 1
-                        : notaSeleccionada?.mesaId,
-                      notaSeleccionada?.renglon == null
-                        ? 1
-                        : notaSeleccionada?.renglon
-                    )
+                  onPress={() => {
+                    if(notaSeleccionada)
+                    {
+                      deleteNote(notaSeleccionada.mesaId , notaSeleccionada.renglon )
+                      setModalConfirmacionBorrado(false);
+                      setNotaSeleccionada(null);
+                    }
+                  }
                   }
                 >
                   <Icon name="check-circle" size={30} color="green" />
@@ -567,6 +572,44 @@ export default function MapaMesas() {
             </View>
           </View>
         </Modal>
+        {/* Modal para agregar nota */}
+      <Modal visible={addModalNotaVisible} transparent animationType="slide">
+        <View style={styles.smallModalContainer}>
+          <View style={styles.AddTableModalContent}>
+            <Text style={styles.newTableName}>Nueva Nota</Text>
+            <TextInput
+              placeholder="Mensaje de la nota"
+              value={message}
+              maxLength={60}
+              multiline={true}
+              numberOfLines={4}
+              onChangeText={(text) => setMessage(text)}
+              style={{ borderWidth: 1, padding: 10, marginBottom: 10}}
+            />                        
+            <View style={styles.statusContainer}>
+              <View style={styles.menuConfirmacion}>
+                <Button
+                  title="Confirmar"
+                  onPress={() => {
+                    if(tables[mesaSeleccionada]){
+                      addNote(parseInt(tables[mesaSeleccionada].id), message);
+                      setAddModalNotaVisible(false);
+                      setMessage("");
+                      fetchNotes(tables[mesaSeleccionada].id);
+                    } 
+                  }}                  
+                />
+              </View>
+              <View style={styles.menuConfirmacion}>
+                <Button
+                  title="Cerrar"
+                  onPress={() => setAddModalNotaVisible(false)}
+                />
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
       </GestureHandlerRootView>
     </View>
   );
