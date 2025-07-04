@@ -89,7 +89,7 @@ export default function MapaMesas() {
       numero: number,
       mozoId: localStorage.getItem("userId") || "0",
       estado: 1,
-      qr: `https://miapp.com/mesa${number}`,
+      qr: '',
     };
     await addTable(newTable);
     fetchTables();
@@ -279,7 +279,7 @@ export default function MapaMesas() {
         </Svg>
         <Modal visible={modalQRVisible} transparent animationType="slide">
           <View style={styles.modalContainer}>
-            <Text style={styles.tableName}>
+            <Text style={styles.QRtableName}>
               QR de {selectedTableQR?.nombre}
             </Text>
             <View style={styles.modalContent}>
@@ -757,5 +757,10 @@ const styles = StyleSheet.create({
   },
   notaRecuadroSeleccionada: {
     backgroundColor: "rgb(220, 169, 43)",
+  },
+    QRtableName: {
+    color: "white",
+    fontSize: 20,
+    textAlign: "center",
   },
 });

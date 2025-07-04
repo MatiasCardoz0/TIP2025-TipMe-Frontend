@@ -10,14 +10,15 @@ import QRCode  from "react-native-qrcode-svg";
 
 export default function HomeScreen() {
 
-  const { tables, fetchTables, addTable, loading, error } = useTables();
-
+  const { tables, fetchTables, addTable, updateTable, loading, error } = useTables();
   const [modalVisible, setModalVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [selectedTableQR, setSelectedTableQR] = useState<Table | null>(null);
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null); // si está el id abre el dropdown, si es null lo cierra
   let sortedTables = [...tables].reverse(); // Mesas ordenadas con las mas nuevas primero
+
   
     useEffect(() => {
       fetchTables(); // Cargar las mesas al montar el componente
@@ -52,28 +53,34 @@ export default function HomeScreen() {
 
     const isInteger = (value: string) => {
   return /^\d+$/.test(value);
-};
+  };
 
-    const newTable = async () => {
-        const newTable = {
-          nombre: name,
-          numero: number,
-          mozoId: localStorage.getItem("userId") || "0",
-          estado: EstadoMesa.DISPONIBLE,
-          qr: `https://miapp.com/mesa${number}`,
-        };
-        await addTable(newTable);
-        fetchTables();
-        setName("");
-        setNumber("");
+  const newTable = async () => {
+      const newTable = {
+        nombre: name,
+        numero: number,
+        mozoId: localStorage.getItem("userId") || "0",
+        estado: EstadoMesa.DISPONIBLE,
+        qr: '',
       };
+      await addTable(newTable);
+      fetchTables();
+      setName("");
+      setNumber("");
+  };
 
+  const changeState = async (mesa: Table, nombreEstado: string) => {debugger
+    await updateTable(Number(mesa.id), { ...mesa, nombreEstado });
+    fetchTables();
+    setOpenDropdownId(null);
+  }
 
   return (
     <View style={styles.container}> 
+    {/* Modales */}
       <Modal visible={modalVisible} transparent animationType="slide">
     <View style={styles.modalContainer}>
-      <Text style={styles.tableName}>QR de {selectedTableQR?.nombre}</Text>
+      <Text style={styles.QRtableName}>QR de {selectedTableQR?.nombre}</Text>
       <View style={styles.modalContent}>
         {selectedTableQR && <QRCode value={selectedTableQR.qr} size={200} />}
         <Text style={{ color: "white", fontSize: 16, marginTop: 10, marginBottom: 10 }}>
@@ -114,6 +121,8 @@ export default function HomeScreen() {
         </View>
       </View>
     </Modal>
+    
+    {/* Lista de mesas */}
       <Text style= {styles.listItemsTitle}>Mis Mesas</Text>
       <TouchableOpacity style={styles.addTableButton} onPress={() => setAddModalVisible(true)} ><Text style={{color: "#339CFF"}}>╋ Agregar Mesa</Text></TouchableOpacity>
       <FlatList 
@@ -129,7 +138,8 @@ export default function HomeScreen() {
                   <Text style={styles.seats}>Mesa numero: {item.numero}</Text>
                 </View>
                 <View style={styles.statusContainer}>
-                  <View style={[styles.statusBadge, getStatusStyle(item.estado)]}>
+                    {/* dropdown de estados */}
+                    <TouchableOpacity style={[styles.statusBadge, getStatusStyle(item.estado), { flexDirection: "row", alignItems: "center" }]} onPress={() => setOpenDropdownId(openDropdownId === item.id ? null : item.id)}>
                     <Text style={styles.statusText}>
                       {formatEnumText(
                         Object.keys(EstadoMesa).find(
@@ -137,7 +147,28 @@ export default function HomeScreen() {
                         ) || "UNKNOWN"
                       )}
                     </Text>
-                  </View>
+                    <Icon name={ openDropdownId === item.id ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={20} color="#fff" style={{ marginLeft: 5 }} />
+                  </TouchableOpacity>
+                    {openDropdownId === item.id && (
+    <View style={styles.dropdownMenu}>
+      {[EstadoMesa.DISPONIBLE, EstadoMesa.RESERVADA, EstadoMesa.OCUPADA].map((estado) => (
+        <TouchableOpacity
+          key={estado}
+          style={styles.dropdownItem}
+          onPress= {() => changeState(item, Object.keys(EstadoMesa).find((key) => EstadoMesa[key as keyof typeof EstadoMesa] === estado) || "UNKNOWN")}
+        >
+          <Text style={styles.dropdownItemText}>
+            {formatEnumText(
+              Object.keys(EstadoMesa).find(
+                (key) =>
+                  EstadoMesa[key as keyof typeof EstadoMesa] === estado
+              ) || "UNKNOWN"
+            )}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  )}
                 </View>
               </View>
               <View style={styles.qrIconContainer}>
@@ -182,7 +213,7 @@ const styles = StyleSheet.create({
   tableName: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#ffffff",
+    color: "#333",
     margin: 20,
   },
   seats: {
@@ -244,6 +275,11 @@ const styles = StyleSheet.create({
   alignItems: "center",
   width: "100%",
 },
+  QRtableName: {
+    color: "white",
+    fontSize: 20,
+    textAlign: "center",
+  },
 qrIconContainer: {
   justifyContent: "center",
   alignItems: "flex-end",
@@ -276,5 +312,25 @@ qrIconContainer: {
     margin: 3,
     
   },
+  dropdownMenu: {
+  position: "absolute",
+  top: -35,
+  left: 126,
+  borderRadius: 8,
+  elevation: 100,
+  zIndex: 10000, 
+  borderWidth: 1,
+  borderColor: "#ccc",
+  backgroundColor: "#fff",
+},
+dropdownItem: {
+  padding: 6,
+  borderBottomWidth: 1,
+  borderBottomColor: "#eee",
+},
+dropdownItemText: {
+  color: "#333",
+  fontSize: 14,
+},
 });
 

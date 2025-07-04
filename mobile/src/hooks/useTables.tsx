@@ -24,6 +24,8 @@ export const useTables = () => {
   // POST Mesas (Agregar una nueva mesa)
   const addTable = async (newTable: any) => {
     try {
+      const qrUrl = `${config.WEB_URL}/mesa`
+      newTable.qr = qrUrl; // Asigna la URL base a la prop. QR de la mesa
       const response = await fetch(config.API_URL+"/api/mesa/grabar", {
         method: "POST",
         headers: {
