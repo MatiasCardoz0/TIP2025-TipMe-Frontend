@@ -82,8 +82,8 @@ export default function HomeScreen() {
     <View style={styles.modalContainer}>
       <Text style={styles.QRtableName}>QR de {selectedTableQR?.nombre}</Text>
       <View style={styles.modalContent}>
-        {selectedTableQR && <QRCode value={selectedTableQR.qr} size={200} />}
-        <Text style={{ color: "white", fontSize: 16, marginTop: 10, marginBottom: 10 }}>
+        <View style={{borderWidth: 1}}>{selectedTableQR && <QRCode value={selectedTableQR.qr} size={200} />}</View>
+        <Text style={{ color: "black", fontSize: 16, marginTop: 10, marginBottom: 10 }}>
           {selectedTableQR?.qr}
         </Text>
         <Button title="Cerrar" onPress={() => {setModalVisible(false)
@@ -265,10 +265,12 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    backgroundColor: "#339CFF",
+    backgroundColor: "#fafafa",
     padding: 40,
     borderRadius: 10,
     alignItems: "center",
+    borderColor: "#339CFF",
+    borderWidth: 3
   },
   row: {
   flexDirection: "row",

@@ -285,10 +285,10 @@ export default function MapaMesas() {
               QR de {selectedTableQR?.nombre}
             </Text>
             <View style={styles.modalContent}>
-              {selectedTableQR && (
-                <QRCode value={selectedTableQR.qr} size={200} />
-              )}
-                <Text style={{ color: "white", fontSize: 16, marginTop: 10 }}>
+              <View style={{borderWidth: 1}}>{selectedTableQR && (
+                <QRCode value={selectedTableQR.qr} size={200}/>
+              )}</View>
+                <Text style={{ color: "black", fontSize: 16, marginTop: 10 }}>
                   {selectedTableQR?.qr}
                 </Text>
               <View style={styles.modalButton}>
@@ -467,7 +467,7 @@ export default function MapaMesas() {
         {/* Menu Notas*/}
         <Modal visible={menuNotasVisible} transparent animationType="slide">
           <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
+            <View style={styles.modalContentNota}>
               <View style={styles.notaBotonera}>
                 <TouchableOpacity
                   onPress={() => {
@@ -475,7 +475,7 @@ export default function MapaMesas() {
                   }}
                 >
                   <View style={{ alignItems: "center" }}>
-                    <Icon name="add-circle" size={30} color="green" />
+                    <Icon name="add-circle" size={30} color="#339CFF" />
                     <Text>Agregar Nota</Text>
                   </View>
                 </TouchableOpacity>
@@ -493,7 +493,7 @@ export default function MapaMesas() {
                 </TouchableOpacity>
               </View>
               <View>
-                <Text style={styles.tableName}>Notas de la mesa</Text>
+                <Text style={styles.tableNameNota}>Notas de la mesa</Text>
                 {notes.length > 0 ? (
                   notes.map((nota) => (
                     <Pressable
@@ -669,10 +669,20 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
-    backgroundColor: "#339CFF",
+    backgroundColor: "#fafafa",
     padding: 40,
     borderRadius: 10,
     alignItems: "center",
+    borderColor: "#339CFF",
+    borderWidth: 3
+  },
+   modalContentNota: {
+    backgroundColor: "#fafafa",
+    padding: 40,
+    borderRadius: 10,
+    alignItems: "center",
+    borderColor: "#339CFF",
+    borderWidth: 3
   },
    modalContentConfirmacion: {
     backgroundColor: "white",
@@ -689,6 +699,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     color: "#ffffff",
+    margin: 20,
+  },
+   tableNameNota: {
+    fontSize: 20,
+    fontWeight: "bold",
     margin: 20,
   },
   newTableName: {
@@ -776,10 +791,10 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   notaRecuadro: {
-    backgroundColor: "white",
+    backgroundColor: "rgba(51, 156, 255, 0.6)",
     padding: 10,
     marginVertical: 5,
-    borderRadius: 8,
+    borderRadius: 3,
     alignItems: "center",
     width: 200,
   },
