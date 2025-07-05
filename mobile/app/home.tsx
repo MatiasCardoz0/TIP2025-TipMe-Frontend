@@ -7,17 +7,22 @@ import { formatEnumText } from "./stateEnum";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Modal } from "react-native";
 import QRCode  from "react-native-qrcode-svg";
+import ModalDeleteTable from "./components/ModalDeleteTable";
+import { TouchableWithoutFeedback, Keyboard } from "react-native";
 
 export default function HomeScreen() {
 
-  const { tables, fetchTables, addTable, updateTable, loading, error } = useTables();
+  const { tables, fetchTables, addTable, updateTable, deleteTable, loading, error } = useTables();
   const [modalVisible, setModalVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [selectedTableQR, setSelectedTableQR] = useState<Table | null>(null);
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
-  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null); // si está el id abre el dropdown, si es null lo cierra
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null); // si está el id abre el dropdown de estados, si es null lo cierra
   let sortedTables = [...tables].reverse(); // Mesas ordenadas con las mas nuevas primero
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null); //menu de opciones de caad mesa
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [tableToDelete, setTableToDelete] = useState<Table | null>(null);
 
   
     useEffect(() => {
@@ -76,6 +81,7 @@ export default function HomeScreen() {
   }
 
   return (
+    
     <View style={styles.container}> 
     {/* Modales */}
       <Modal visible={modalVisible} transparent animationType="slide">
@@ -125,66 +131,100 @@ export default function HomeScreen() {
     {/* Lista de mesas */}
       <Text style= {styles.listItemsTitle}>Mis Mesas</Text>
       <TouchableOpacity style={styles.addTableButton} onPress={() => setAddModalVisible(true)} ><Text style={{color: "#339CFF"}}>╋ Agregar Mesa</Text></TouchableOpacity>
+      <TouchableWithoutFeedback
+    onPress={() => {
+      setOpenMenuId(null);
+      setOpenDropdownId(null);}}>
       <FlatList 
         data={sortedTables}
         keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
         renderItem={({ item }) => (
-
+          
           <View style={styles.tableContainer}>
-            <View style={styles.row}>
-              <View style={{ flex: 1 }}>
-                <View style={styles.tableInfo}>
-                  <Text style={styles.tableName}>{item.nombre}</Text>
-                  <Text style={styles.seats}>Mesa numero: {item.numero}</Text>
-                </View>
-                <View style={styles.statusContainer}>
-                    {/* dropdown de estados */}
-                    <TouchableOpacity style={[styles.statusBadge, getStatusStyle(item.estado), { flexDirection: "row", alignItems: "center" }]} onPress={() => setOpenDropdownId(openDropdownId === item.id ? null : item.id)}>
-                    <Text style={styles.statusText}>
-                      {formatEnumText(
-                        Object.keys(EstadoMesa).find(
-                          key => EstadoMesa[key as keyof typeof EstadoMesa] === item.estado
-                        ) || "UNKNOWN"
-                      )}
-                    </Text>
-                    <Icon name={ openDropdownId === item.id ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={20} color="#fff" style={{ marginLeft: 5 }} />
-                  </TouchableOpacity>
-                    {openDropdownId === item.id && (
-    <View style={styles.dropdownMenu}>
-      {[EstadoMesa.DISPONIBLE, EstadoMesa.RESERVADA, EstadoMesa.OCUPADA].map((estado) => (
-        <TouchableOpacity
-          key={estado}
-          style={styles.dropdownItem}
-          onPress= {() => changeState(item, Object.keys(EstadoMesa).find((key) => EstadoMesa[key as keyof typeof EstadoMesa] === estado) || "UNKNOWN")}
-        >
-          <Text style={styles.dropdownItemText}>
-            {formatEnumText(
-              Object.keys(EstadoMesa).find(
-                (key) =>
-                  EstadoMesa[key as keyof typeof EstadoMesa] === estado
-              ) || "UNKNOWN"
-            )}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  )}
-                </View>
+          <View style={styles.row}>
+            <View style={{ flex: 1 }}>
+              <View style={styles.tableInfo}>
+                <Text style={styles.tableName}>{item.nombre}</Text>
+                <Text style={styles.seats}>Mesa numero: {item.numero}</Text>
               </View>
-              <View style={styles.qrIconContainer}>
-                <Icon
-                  name="qr-code"
-                  size={30}
-                  onPress={() => {
-                    setSelectedTableQR(item);
-                    setModalVisible(true);
-                  }}
-                />
+              {/*** dropdown de estados ***/}
+              <View style={styles.statusContainer}>
+                  <TouchableOpacity style={[styles.statusBadge, getStatusStyle(item.estado), { flexDirection: "row", alignItems: "center" }]} onPress={() => setOpenDropdownId(openDropdownId === item.id ? null : item.id)}>
+                  <Text style={styles.statusText}>
+                    {formatEnumText(
+                      Object.keys(EstadoMesa).find(
+                        key => EstadoMesa[key as keyof typeof EstadoMesa] === item.estado
+                      ) || "UNKNOWN"
+                    )}
+                  </Text>
+                  <Icon name={ openDropdownId === item.id ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={20} color="#fff" style={{ marginLeft: 5 }} />
+                </TouchableOpacity>
+                {openDropdownId === item.id && (
+                  <View style={styles.dropdownMenu}>
+                    {[EstadoMesa.DISPONIBLE, EstadoMesa.RESERVADA, EstadoMesa.OCUPADA].map((estado) => (
+                      <TouchableOpacity
+                      key={estado}
+                      style={styles.dropdownItem}
+                        onPress= {() => changeState(item, Object.keys(EstadoMesa).find((key) => EstadoMesa[key as keyof typeof EstadoMesa] === estado) || "UNKNOWN")}>
+                        <Text style={styles.dropdownItemText}>
+                          {formatEnumText(
+                            Object.keys(EstadoMesa).find(
+                              (key) =>
+                                EstadoMesa[key as keyof typeof EstadoMesa] === estado
+                            ) || "UNKNOWN"
+                          )}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                </View> )}
               </View>
             </View>
+            {/* menú de tres puntitos */}
+            <View style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center" }}>
+              <TouchableOpacity onPress={() => setOpenMenuId(item.id)} style={{ padding: 6 }}>
+                <Icon name="more-vert" size={26} color="#333" />
+              </TouchableOpacity>
+            </View>
+            {openMenuId === item.id && (
+              <View style={styles.meatballMenu}>
+                <TouchableOpacity
+                  style={{ padding: 7}}
+                  onPress={() => {
+                    setTableToDelete(item);
+                    setDeleteModalVisible(true);
+                    setOpenMenuId(null);
+                  }}
+                  >
+                  <Text style={{ color: "red"}}>Eliminar mesa</Text>
+                </TouchableOpacity>
+              </View>
+            )}      
+            {/* QR */}
+            <View style={styles.qrIconContainer}>
+              <Icon
+                name="qr-code"
+                size={30}
+                onPress={() => {
+                  setSelectedTableQR(item);
+                  setModalVisible(true);
+                }}/>
+            </View>
           </View>
-        )}
-      />
+        </View>
+        )}/>
+        </TouchableWithoutFeedback>
+    <ModalDeleteTable visible={deleteModalVisible} onConfirm={() => {
+      if (tableToDelete) {
+        deleteTable(Number(tableToDelete.id));
+        setDeleteModalVisible(false);
+        setTableToDelete(null);
+      }
+    }}
+    onCancel={() => {
+      setDeleteModalVisible(false);
+      setTableToDelete(null);
+    }}
+  />
     </View>
   )
 }
@@ -195,6 +235,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     width: '100%',
     padding: 15,
+    backgroundColor: '#fafafa',
   },
   tableContainer: {
     backgroundColor: '#fff',
@@ -303,7 +344,6 @@ qrIconContainer: {
   },
   addTableButton: {
     color: "#339CFF",
-    backgroundColor: "white",
     marginBottom: 20,
     padding: 10,
     borderRadius: 5,
@@ -334,5 +374,20 @@ dropdownItemText: {
   color: "#333",
   fontSize: 14,
 },
+meatballMenu: {
+  position: "absolute",
+  top: 45,
+  right: 65,
+  backgroundColor: "#fff",
+  borderRadius: 8,
+  elevation: 5,
+  zIndex: 100,
+  borderWidth: 1,
+  borderColor: "#ccc",
+  minWidth: 100,
+  shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+  },
 });
 
