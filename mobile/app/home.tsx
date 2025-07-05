@@ -3,12 +3,12 @@ import { Text, View, StyleSheet, FlatList, Button, TextInput, TouchableOpacity }
 import { useTables } from "../src/hooks/useTables";
 import EstadoMesa from "./stateEnum";
 import { formatEnumText } from "./stateEnum";
-
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Modal } from "react-native";
 import QRCode  from "react-native-qrcode-svg";
 import ModalDeleteTable from "./components/ModalDeleteTable";
 import { TouchableWithoutFeedback, Keyboard } from "react-native";
+import { ToastContainer } from "react-toastify";
 
 export default function HomeScreen() {
 
@@ -74,7 +74,7 @@ export default function HomeScreen() {
       setNumber("");
   };
 
-  const changeState = async (mesa: Table, nombreEstado: string) => {debugger
+  const changeState = async (mesa: Table, nombreEstado: string) => {
     await updateTable(Number(mesa.id), { ...mesa, nombreEstado });
     fetchTables();
     setOpenDropdownId(null);
@@ -225,6 +225,7 @@ export default function HomeScreen() {
       setTableToDelete(null);
     }}
   />
+    <ToastContainer />
     </View>
   )
 }

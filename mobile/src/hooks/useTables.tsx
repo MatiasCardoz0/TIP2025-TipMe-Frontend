@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { config } from "../../config"
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const useTables = () => {
   const [tables, setTables] = useState<any[]>([]);
@@ -38,6 +40,7 @@ export const useTables = () => {
       }
       const createdTable = await response.json();
       setTables((prevTables) => [...prevTables, createdTable]); // Agrega la nueva mesa
+      toast.success('Mesa creada con éxito');
     } catch (err: any) {
       setError(err.message || "Error al agregar mesa");
     }

@@ -26,6 +26,7 @@ import { useTables } from "../src/hooks/useTables";
 import { Int32 } from "react-native/Libraries/Types/CodegenTypes";
 import { useNotes } from "../src/hooks/useNotes";
 import ModalDeleteTable from "./components/ModalDeleteTable";
+import { ToastContainer } from "react-toastify";
 
 export default function MapaMesas() {
   const { width, height } = useWindowDimensions();
@@ -627,6 +628,7 @@ export default function MapaMesas() {
         setDeleteModalVisible(false);
         setTableToDelete(null);
       }} />
+      <ToastContainer />
     </View>
   );
 }
