@@ -114,6 +114,7 @@ const styles = StyleSheet.create({
       justifyContent: 'flex-start',
       alignItems: 'flex-start',
       paddingHorizontal: 10,
+      backgroundColor: '#fafafa',
     },
     content: {
         //paddingTop: "10%",

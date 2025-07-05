@@ -7,6 +7,7 @@ import {
   Button,
   TextInput,
   Pressable,
+  ScrollView,
 } from "react-native";
 import Svg, { Rect } from "react-native-svg";
 import {
@@ -24,6 +25,7 @@ import Navbar from "./components/NavBar";
 import { useTables } from "../src/hooks/useTables";
 import { Int32 } from "react-native/Libraries/Types/CodegenTypes";
 import { useNotes } from "../src/hooks/useNotes";
+import ModalDeleteTable from "./components/ModalDeleteTable";
 
 export default function MapaMesas() {
   const { width, height } = useWindowDimensions();
@@ -59,6 +61,8 @@ export default function MapaMesas() {
   const [notaPresionada, setNotaPresionada] = useState<number | null>(null);
   const [modalConfirmacionBorrado, setModalConfirmacionBorrado] =
     useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [tableToDelete, setTableToDelete] = useState<Table | null>(null);
 
   useEffect(() => {
     fetchTables();
@@ -378,16 +382,14 @@ export default function MapaMesas() {
               />
               <Text style={styles.menuIconContainer}>QR</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuIconContainer}>
-              <Icon
-                name="delete"
-                size={30}
+            <TouchableOpacity style={styles.menuIconContainer}
                 onPress={() => {
-                  deleteTable(tables[mesaSeleccionada].id);
+                  setTableToDelete(tables[mesaSeleccionada]);
+                  setDeleteModalVisible(true);
                   setMenuVisible(false);
                   setMesaSeleccionada(0);
-                }}
-              />
+                }}>
+                <Icon name="delete" size={30} />
               <Text style={styles.menuIconContainer}>Borrar</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -479,14 +481,14 @@ export default function MapaMesas() {
                     <Text>Agregar Nota</Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity
+                <TouchableOpacity disabled={!notaSeleccionada}
                   onPress={() => {
                     if(notaSeleccionada){
                       setModalConfirmacionBorrado(true);
                     } 
                   }}
                 >
-                  {notes.length > 0 &&<View style={{ alignItems: "center" }}>
+                  {notes.length > 0 &&<View style={{ alignItems: "center",opacity: notaSeleccionada ? 1 : 0.5 }}>
                     <Icon name="delete" size={30} color="#f44336"/>
                     <Text>Borrar</Text>
                   </View>}
@@ -494,6 +496,8 @@ export default function MapaMesas() {
               </View>
               <View>
                 <Text style={styles.tableNameNota}>Notas de la mesa</Text>
+                <View style={{ flex: 1, width: "100%" }}>
+                <ScrollView style={{ flexGrow:0, height: 140, width: 220, marginBottom:20 }}>
                 {notes.length > 0 ? (
                   notes.map((nota) => (
                     <Pressable
@@ -522,6 +526,8 @@ export default function MapaMesas() {
                     </Text>
                   </View>
                 )}
+                </ScrollView>
+                </View>
               </View>
               <View style={styles.modalButton}>
                 <Button
@@ -538,12 +544,11 @@ export default function MapaMesas() {
         <Modal
           visible={modalConfirmacionBorrado}
           transparent
-          animationType="slide"
-        >
+          animationType="slide">
           <View style={styles.modalContainer}>
             <View style={styles.modalContentConfirmacion}>
               <Text style={{ margin: 10 }}>
-                ¿Realmente deséa borrar la nota?
+                ¿Realmente desea borrar la nota?
               </Text>
               <View style={styles.menuEstadoConfirmacion}>
                 <TouchableOpacity
@@ -611,6 +616,17 @@ export default function MapaMesas() {
         </View>
       </Modal>
       </GestureHandlerRootView>
+      <ModalDeleteTable visible={deleteModalVisible} onConfirm={() => {
+        if (tableToDelete) {
+          deleteTable(Number(tableToDelete.id));
+          setDeleteModalVisible(false);
+          setTableToDelete(null);
+        }
+      }}
+      onCancel={() => {
+        setDeleteModalVisible(false);
+        setTableToDelete(null);
+      }} />
     </View>
   );
 }
@@ -682,7 +698,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     borderColor: "#339CFF",
-    borderWidth: 3
+    borderWidth: 3,
+    height:380,
   },
    modalContentConfirmacion: {
     backgroundColor: "white",
