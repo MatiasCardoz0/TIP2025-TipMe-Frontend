@@ -36,6 +36,7 @@ export const useTables = () => {
         body: JSON.stringify(newTable),
       });
       if (!response.ok) {
+        toast.error('Hubo un error al agregar mesa');
         throw new Error("Error al agregar la mesa");
       }
       const createdTable = await response.json();

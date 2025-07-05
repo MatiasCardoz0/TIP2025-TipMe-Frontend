@@ -23,8 +23,10 @@ export default function HomeScreen() {
   const [openMenuId, setOpenMenuId] = useState<string | null>(null); //menu de opciones de caad mesa
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [tableToDelete, setTableToDelete] = useState<Table | null>(null);
+  const [activeFilter, setActiveFilter] = useState<number | null>(null);
 
-  
+  let filteredTables = activeFilter === null ? sortedTables : sortedTables.filter(table => table.estado === activeFilter);
+
     useEffect(() => {
       fetchTables(); // Cargar las mesas al montar el componente
       console.log(tables);
@@ -56,6 +58,23 @@ export default function HomeScreen() {
        };
     };
 
+  const getStatusColor = (estado: number) => {
+  switch (estado) {
+    case EstadoMesa.DISPONIBLE:
+      return '#4caf50';
+    case EstadoMesa.RESERVADA:
+      return '#ff9800';
+    case EstadoMesa.OCUPADA:
+      return '#f44336';
+    case EstadoMesa.LLAMANDO:
+      return '#a231ee';
+    case EstadoMesa.ESPERANDO_CUENTA:
+      return '#df5722';
+    default:
+      return '#333';
+  }
+};
+
     const isInteger = (value: string) => {
   return /^\d+$/.test(value);
   };
@@ -79,6 +98,14 @@ export default function HomeScreen() {
     fetchTables();
     setOpenDropdownId(null);
   }
+
+  const toggleFilter = (estado: number) => {
+  if (activeFilter === estado) {
+    setActiveFilter(null); 
+  } else {
+    setActiveFilter(estado);
+  }
+};
 
   return (
     
@@ -131,12 +158,21 @@ export default function HomeScreen() {
     {/* Lista de mesas */}
       <Text style= {styles.listItemsTitle}>Mis Mesas</Text>
       <TouchableOpacity style={styles.addTableButton} onPress={() => setAddModalVisible(true)} ><Text style={{color: "#339CFF"}}>╋ Agregar Mesa</Text></TouchableOpacity>
+      {/* Filtros de estado */}
+       <View style={styles.filterContainer}>
+          {[EstadoMesa.DISPONIBLE, EstadoMesa.RESERVADA, EstadoMesa.OCUPADA, EstadoMesa.LLAMANDO, EstadoMesa.ESPERANDO_CUENTA].map((estado) => (
+          <TouchableOpacity key={estado} style={[ styles.filterCard, {borderColor: getStatusColor(estado) }, activeFilter === estado && styles.filterCardActive,]} onPress={() => toggleFilter(estado)} >
+            <Text style={styles.filterCardText}>
+              {formatEnumText(Object.keys(EstadoMesa).find(key => EstadoMesa[key as keyof typeof EstadoMesa] === estado) || "UNKNOWN")}
+            </Text>
+          </TouchableOpacity> ))}
+        </View>
       <TouchableWithoutFeedback
     onPress={() => {
       setOpenMenuId(null);
       setOpenDropdownId(null);}}>
       <FlatList 
-        data={sortedTables}
+        data={filteredTables}
         keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
         renderItem={({ item }) => (
           
@@ -294,7 +330,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   listItemsTitle: {
-    margin: 20,
+    margin: 15,
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
@@ -345,8 +381,8 @@ qrIconContainer: {
   },
   addTableButton: {
     color: "#339CFF",
-    marginBottom: 20,
-    padding: 10,
+    marginBottom: 10,
+    padding: 5,
     borderRadius: 5,
   },
   menuConfirmacion: {
@@ -390,5 +426,28 @@ meatballMenu: {
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
   },
+filterContainer: {
+  display: 'flex',
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'flex-start',
+  marginBottom: 6,
+},
+filterCard: {
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderWidth: 2,
+  borderRadius: 20,
+  marginRight: 5,
+  marginBottom: 5,
+  padding: 3,
+},
+filterCardText: {
+  fontWeight: 'semibold',
+},
+filterCardActive: {
+ borderStyle: 'dotted',
+  borderWidth: 3,
+},
 });
 
