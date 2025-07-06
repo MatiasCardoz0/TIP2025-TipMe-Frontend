@@ -14,14 +14,16 @@ export default function CallWaiterModal({ openModal, onConfirm }) {// recibe las
       <div className="modal-container">
         <h3>Solicitando servicio a la mesa</h3>
         <div className="form-container">
-          <label className="modal-label">
-            Mensaje para el mozo/a (opcional):
+            <div>Mensaje para el mozo/a (opcional):</div>
+          <label className="modal-label ">
+            
             <input
               type="text"
               value={note}
               onChange={e => setNote(e.target.value)}
               placeholder="Ej: Cambiar la gaseosa por agua"
               maxLength={100}
+              margin-top="10px"
             />
           </label>
           <button className="modal-button" onClick={handleConfirm}>
