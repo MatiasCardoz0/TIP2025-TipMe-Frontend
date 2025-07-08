@@ -10,16 +10,18 @@ function Success() {
   const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const externalRef = searchParams.get('external_reference');
-    const mesaId = searchParams.get("id");
+    let mesaId = searchParams.get("id");
     const monto = searchParams.get("amount");
+
     
     useEffect(() => {
-    if (mesaId && monto) {
-      saveTip(parseInt(mesaId));
+    if (mesaId && monto) {debugger
+      mesaId = parseInt(mesaId);
+      saveTip();
     }
   }, [mesaId]);
 
-    const saveTip = async (mesaId) => {           
+    const saveTip = async () => {           
         try {
             const response = await axios.post(config.API_URL+"/api/propina/grabar", {
                 "monto": parseFloat(monto),
@@ -43,7 +45,7 @@ function Success() {
         <h2 className='portal-title'>Gracias por su colaboración!</h2>
 
         <div className='buttons'>
-          <button className='menu-button' onClick={() => navigate("/mesa/" + {mesaId})}>
+          <button className='menu-button' onClick={() => navigate("/mesa/" + mesaId)}>
             Volver
           </button>
         </div>
