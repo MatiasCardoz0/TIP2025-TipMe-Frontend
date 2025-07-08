@@ -4,24 +4,25 @@ import logo from '../../shared/TipMe_Logo_transparent.png'
 import { config } from "../../config.js";
 import { useEffect } from "react";
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import axios from 'axios'
 
 function Success() {
+  const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
     const externalRef = searchParams.get('external_reference');
-    const mesaId = externalRef ? externalRef.split('|')[0] : null;
-    const amount = externalRef ? externalRef.split('|')[1] : null;
+    const mesaId = searchParams.get("id");
+    const monto = searchParams.get("amount");
     
     useEffect(() => {
-    if (mesaId) {
-      saveTip(mesaId);
+    if (mesaId && monto) {
+      saveTip(parseInt(mesaId));
     }
   }, [mesaId]);
 
     const saveTip = async (mesaId) => {           
         try {
             const response = await axios.post(config.API_URL+"/api/propina/grabar", {
-                "monto": amount,
+                "monto": parseFloat(monto),
                 "fecha": new Date().toISOString(),
                 "idMesa": mesaId,
         });
