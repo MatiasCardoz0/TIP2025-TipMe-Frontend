@@ -30,7 +30,6 @@ export default function LoginScreen() {
   }
   else {
     saveDataLocal("userId", response.id);
-    //localStorage.setItem("userId", response.id);
     router.replace("/home");
   }
 };
@@ -64,7 +63,7 @@ const handleRegister = async () => {
       />
       {errorMsg ? <Text style={{ color: "red" }}>{errorMsg}</Text> : null}
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+        <Text style={styles.buttonText}>Ingresar</Text>
       </TouchableOpacity>
     </View>
   );

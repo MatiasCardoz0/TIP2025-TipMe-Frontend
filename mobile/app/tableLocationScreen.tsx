@@ -338,7 +338,11 @@ export default function MapaMesas() {
                           ? "#4caf50"
                           : mesa.nombreEstado === "RESERVADA"
                           ? "#ff9800"
-                          : "#f44336"
+                          : mesa.nombreEstado === "OCUPADA"
+                          ? "#f44336"
+                          : mesa.nombreEstado === "ESPERANDO CUENTA"
+                          ? "#12607E"
+                          : "#a231ee"
                       }
                     />
                   </Svg>
@@ -428,7 +432,7 @@ export default function MapaMesas() {
           <View
             style={[styles.menuEstado, { left: menuPos.x, top: menuPos.y }]}
           >
-            {["DISPONIBLE", "OCUPADA", "RESERVADA"].map((estado) => (
+            {["DISPONIBLE", "OCUPADA", "RESERVADA", "LLAMANDO", "ESPERANDO CUENTA"].map((estado) => (
               <TouchableOpacity
                 key={estado}
                 onPress={() => setNuevoEstado(estado)}
@@ -442,6 +446,10 @@ export default function MapaMesas() {
                         ? "#f44336"
                         : estado === "RESERVADA"
                         ? "#ff9800"
+                        : estado === "LLAMANDO"
+                        ? "#a231ee"
+                        : estado === "ESPERANDO CUENTA"
+                        ? "#12607E"
                         : "#a231ee",
                   },
                 ]}

@@ -69,7 +69,7 @@ export default function HomeScreen() {
     case EstadoMesa.LLAMANDO:
       return '#a231ee';
     case EstadoMesa.ESPERANDO_CUENTA:
-      return '#df5722';
+      return '#12607E';
     default:
       return '#333';
   }
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#a231ee',
   },
   statusWaitingBill: {
-    backgroundColor: '#df5722',
+    backgroundColor: '#12607E',
   },
   statusText: {
     color: '#fff',
